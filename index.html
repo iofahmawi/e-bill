@@ -71,6 +71,11 @@
             border-top: 5px solid var(--primary-blue);
         }
 
+        /* === التعديل هنا === */
+        .input-group {
+            margin-bottom: 25px; /* تم توحيد المسافة السفلية هنا */
+        }
+
         .input-group label {
             display: block;
             font-size: 0.95rem;
@@ -87,7 +92,7 @@
             font-size: 1.1rem;
             text-align: right; 
             transition: border-color 0.3s, box-shadow 0.3s; 
-            margin-bottom: 20px;
+            /* margin-bottom: 20px; <-- تم حذف هذا السطر */
         }
         
         /* لون الإطار عند التركيز (Focus State) */
@@ -100,7 +105,7 @@
 
         /* 3. مجموعة نوع الاشتراك */
         .radio-group {
-            margin-bottom: 25px;
+            margin-bottom: 25px; /* هذه القيمة بقيت كما هي لتحقيق التناسق */
         }
 
         .radio-group label {
@@ -469,4 +474,3 @@
     </script>
 </body>
 </html>
-
