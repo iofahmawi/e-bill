@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>حساب فاتورة الكهرباء</title>
     
-    <!-- === الإضافات الجديدة لـ PWA === -->
+    <!-- === الإضافات الجد الجديدة لـ PWA === -->
     <meta name="theme-color" content="#1976D2">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-1024.png">
@@ -34,10 +34,10 @@
             font-family: 'Roboto', sans-serif;
         }
         
-        /* تحسين الـ viewport الديناميكي لـ PWA */
+        /* دعم الـ viewport الديناميكي لـ PWA */
         html {
             height: 100%;
-            height: 100dvh; /* يتكيف مع إخفاء شريط العنوان */
+            height: 100dvh;
         }
 
         body {
@@ -186,7 +186,6 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
             height: 100dvh;
             background-color: rgba(0, 0, 0, 0.6);
             display: none;
@@ -203,7 +202,6 @@
             width: 100%;
             max-width: 450px;
             position: relative;
-            max-height: 90vh;
             max-height: 90dvh;
             overflow-y: auto;
         }
@@ -321,14 +319,14 @@
             font-size: 1.1rem;
         }
         
-        /* تحسين الـ footer ليكون دائمًا في الأسفل */
+        /* التذييل: تنزيل نصف سم إضافي + مسافة أنيقة */
         .simple-footer {
             text-align: center;
             color: #888;
             font-size: 0.9rem;
-            padding: 20px;
+            padding: 20px 20px 0.8cm; /* 0.8cm = 0.5cm إضافي + مسافة أصلية */
             background-color: var(--text-light);
-            margin-top: auto; /* يدفع الـ footer للأسفل */
+            margin-top: auto;
             width: 100%;
         }
         .simple-footer a {
