@@ -2,19 +2,17 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <!-- تأكد من أن هذا السطر بسيط وبدون إضافات -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حساب فاتورة الكهرباء</title>
     
-    <!-- === الإضافات الجديدة لـ PWA === -->
     <meta name="theme-color" content="#1976D2">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-1024.png">
     <link rel="apple-touch-icon" href="icon-1024.png">
-    <!-- ============================= -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- تأكد من وجود display=swap هنا -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="icon.png">
     <style>
@@ -47,7 +45,6 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            /* هذا هو الحل: إضافة حشوة سفلية للجسم بالكامل */
             padding-bottom: 1.9cm;
         }
         
@@ -87,231 +84,8 @@
             z-index: 10;
         }
         
-        .input-group {
-            margin-bottom: 25px;
-        }
-
-        .input-group > label {
-            display: block;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .readings-container {
-            display: flex;
-            gap: 15px;
-        }
-
-        .reading-input {
-            flex: 1;
-            width: 0;
-        }
-
-        .reading-input label {
-            display: block;
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .input-group input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            text-align: right; 
-            transition: border-color 0.3s, box-shadow 0.3s; 
-        }
-        
-        .input-group input[type="number"]:focus {
-            border-color: var(--focus-blue); 
-            border-width: 2px; 
-            outline: none; 
-            box-shadow: 0 0 0 1px var(--focus-blue); 
-        }
-
-        .radio-group {
-            margin-bottom: 25px;
-        }
-
-        .radio-group > label {
-            font-weight: 500;
-            margin-bottom: 10px;
-            display: block;
-            color: var(--text-dark);
-        }
-
-        .radio-options {
-            display: flex;
-            gap: 25px;
-            margin-top: 10px;
-        }
-
-        .radio-option input[type="radio"] {
-            margin-left: 8px;
-        }
-        
-        button {
-            width: 100%;
-            background-color: var(--primary-blue);
-            color: var(--white);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 14px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #1565C0;
-        }
-
-        button:focus {
-            outline: none;
-            box-shadow: none;
-        }
-
-        /* === MODAL STYLES === */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background-color: var(--white);
-            border-radius: 14px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 450px;
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        #modal-results-content {
-            padding: 20px;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            left: 15px;
-            font-size: 28px;
-            font-weight: bold;
-            color: #aaa;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .modal-close:hover {
-            color: #333;
-        }
-        
-        #modal-results-content h3 {
-            color: var(--secondary-green); 
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .result-row {
-            display: flex;
-            justify-content: space-between; 
-            align-items: flex-end; 
-            margin: 10px 0;
-            font-size: 1.05rem;
-        }
-        
-        .result-text-value {
-            display: inline-flex;
-            gap: 15px; 
-            align-items: baseline;
-        }
-        
-        .result-label {
-            color: var(--text-dark);
-        }
-        
-        .result-value {
-            color: var(--text-dark);
-            font-weight: 700;
-        }
-        
-        .final-total-section {
-            display: block;
-            text-align: center;
-            padding-top: 10px;
-            padding-bottom: 10px; 
-        }
-        .final-total-section p {
-            font-size: 1.05rem;
-            color: var(--text-dark);
-            margin: 0;
-            padding-bottom: 5px;
-        }
-        .final-total-section span {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--secondary-green);
-            display: block;
-            margin-top: 10px; 
-        }
-        
-        hr {
-            border: none;
-            border-top: 1px solid #eee;
-            margin: 10px 0;
-        }
-
-        .table-container {
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            border-bottom: 1px solid #eee;
-            padding: 10px 8px;
-            text-align: center;
-        }
-        
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        th {
-            background-color: #f0f8ff;
-            color: var(--primary-blue);
-            font-weight: 500;
-        }
-        
-        .error-message {
-            color: var(--error-red);
-            font-weight: 500;
-            text-align: center;
-            margin: 10px 0;
-            font-size: 1.1rem;
-        }
+        /* ... باقي تنسيقات CSS لم تتغير ... */
+        .input-group{margin-bottom:25px}.input-group>label{display:block;color:var(--text-dark);margin-bottom:8px;font-weight:500}.readings-container{display:flex;gap:15px}.reading-input{flex:1;width:0}.reading-input label{display:block;font-size:.85rem;color:#666;margin-bottom:5px}.input-group input[type=number]{width:100%;padding:12px;border:1px solid #ccc;border-radius:12px;font-size:1.1rem;text-align:right;transition:border-color .3s,box-shadow .3s}.input-group input[type=number]:focus{border-color:var(--focus-blue);border-width:2px;outline:none;box-shadow:0 0 0 1px var(--focus-blue)}.radio-group{margin-bottom:25px}.radio-group>label{font-weight:500;margin-bottom:10px;display:block;color:var(--text-dark)}.radio-options{display:flex;gap:25px;margin-top:10px}.radio-option input[type=radio]{margin-left:8px}button{width:100%;background-color:var(--primary-blue);color:var(--white);border:none;padding:10px 20px;border-radius:14px;font-size:1rem;font-weight:500;cursor:pointer;transition:background-color .3s}button:hover{background-color:#1565C0}button:focus{outline:none;box-shadow:none}.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:1000;padding:20px}.modal-content{background-color:var(--white);border-radius:14px;box-shadow:0 5px 15px rgba(0,0,0,.3);width:100%;max-width:450px;position:relative;max-height:90vh;overflow-y:auto}#modal-results-content{padding:20px}.modal-close{position:absolute;top:10px;left:15px;font-size:28px;font-weight:700;color:#aaa;cursor:pointer;line-height:1}.modal-close:hover{color:#333}#modal-results-content h3{color:var(--secondary-green);margin-top:0;margin-bottom:15px;font-weight:500}.result-row{display:flex;justify-content:space-between;align-items:flex-end;margin:10px 0;font-size:1.05rem}.result-text-value{display:inline-flex;gap:15px;align-items:baseline}.result-label{color:var(--text-dark)}.result-value{color:var(--text-dark);font-weight:700}.final-total-section{display:block;text-align:center;padding-top:10px;padding-bottom:10px}.final-total-section p{font-size:1.05rem;color:var(--text-dark);margin:0;padding-bottom:5px}.final-total-section span{font-size:1.6rem;font-weight:700;color:var(--secondary-green);display:block;margin-top:10px}hr{border:none;border-top:1px solid #eee;margin:10px 0}.table-container{border:1px solid #ddd;border-radius:12px;overflow:hidden;margin-bottom:20px}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{border-bottom:1px solid #eee;padding:10px 8px;text-align:center}tbody tr:last-child td{border-bottom:none}th{background-color:#f0f8ff;color:var(--primary-blue);font-weight:500}.error-message{color:var(--error-red);font-weight:500;text-align:center;margin:10px 0;font-size:1.1rem}
         
         .simple-footer {
             text-align: center;
@@ -386,135 +160,16 @@
     </footer>
 
     <script>
-        
-        function formatNumber(num) {
-            return parseFloat(num).toString();
-        }
-
-        function formatCurrency(num) {
-            const roundedNum = num.toFixed(3); 
-            return formatNumber(roundedNum);
-        }
-        
-        function calculateAndSave() {
-            const success = calculateElectricBill();
-            if (success) {
-                localStorage.setItem('calculator_currentReading', document.getElementById('current-reading').value);
-                localStorage.setItem('calculator_previousReading', document.getElementById('previous-reading').value);
-                localStorage.setItem('calculator_subscriptionType', document.querySelector('input[name="subscription-type"]:checked').value);
-            }
-        }
-        
-        function calculateElectricBill() {
-            const currentReadingInput = document.getElementById('current-reading');
-            const previousReadingInput = document.getElementById('previous-reading');
-            const subscriptionTypeInput = document.querySelector('input[name="subscription-type"]:checked');
-            
-            const modal = document.getElementById('result-modal');
-            const modalContentDiv = document.getElementById('modal-results-content');
-            
-            const currentReadingValue = currentReadingInput.value.trim();
-            const previousReadingValue = previousReadingInput.value.trim();
-
-            if (currentReadingValue === '') {
-                modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال القراءة الحالية على الأقل.</p>';
-                modal.style.display = 'flex';
-                return false;
-            }
-
-            const currentReading = parseFloat(currentReadingValue);
-            
-            if (isNaN(currentReading) || currentReading < 0) {
-                modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة الحالية.</p>';
-                modal.style.display = 'flex';
-                return false;
-            }
-
-            let consumption;
-
-            if (previousReadingValue === '') {
-                consumption = currentReading;
-            } else {
-                const previousReading = parseFloat(previousReadingValue);
-
-                if (isNaN(previousReading) || previousReading < 0) {
-                    modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة السابقة.</p>';
-                    modal.style.display = 'flex';
-                    return false;
-                }
-
-                if (currentReading < previousReading) {
-                    modalContentDiv.innerHTML = '<p class="error-message">القراءة الحالية لا يمكن أن تكون أقل من السابقة.</p>';
-                    modal.style.display = 'flex';
-                    return false;
-                }
-                
-                consumption = currentReading - previousReading;
-            }
-
-            const subscriptionType = subscriptionTypeInput.value;
-            
-            let totalEnergyCost = 0.0;
-            let governmentSupport = 0.0;
-            let tableRowsHtml = '';
-            let remaining = consumption;
-            let tariffs;
-            if (subscriptionType === 'supported') {
-                tariffs = [
-                    [300, 0.05],
-                    [600, 0.10],
-                    [Infinity, 0.20] 
-                ];
-            } else {
-                tariffs = [
-                    [1000, 0.12],
-                    [Infinity, 0.15]
-                ];
-            }
-            let accumulatedConsumption = 0; 
-            for (let i = 0; i < tariffs.length && remaining > 0; i++) {
-                const [currentLimit, price] = tariffs[i];
-                const blockStart = accumulatedConsumption + 1;
-                const blockEnd = currentLimit === Infinity ? Infinity : currentLimit;
-                const blockSize = blockEnd - accumulatedConsumption;
-                const usedInBlock = Math.min(remaining, blockSize);
-                const costInBlock = parseFloat((usedInBlock * price).toFixed(5));
-                totalEnergyCost += costInBlock;
-                remaining -= usedInBlock;
-                accumulatedConsumption += usedInBlock; 
-                let rangeLabel;
-                if (currentLimit === Infinity) {
-                    rangeLabel = `أكثر من ${blockStart - 1}`; 
-                } else {
-                    rangeLabel = `${blockStart} - ${blockEnd}`; 
-                }
-                if (usedInBlock > 0) {
-                    tableRowsHtml += `
+        // ... كل كود الجافاسكريبت الخاص بك موجود هنا ...
+        function formatNumber(num){return parseFloat(num).toString()}function formatCurrency(num){const roundedNum=num.toFixed(3);return formatNumber(roundedNum)}function calculateAndSave(){const success=calculateElectricBill();if(success){localStorage.setItem('calculator_currentReading',document.getElementById('current-reading').value);localStorage.setItem('calculator_previousReading',document.getElementById('previous-reading').value);localStorage.setItem('calculator_subscriptionType',document.querySelector('input[name="subscription-type"]:checked').value)}}function calculateElectricBill(){const currentReadingInput=document.getElementById('current-reading');const previousReadingInput=document.getElementById('previous-reading');const subscriptionTypeInput=document.querySelector('input[name="subscription-type"]:checked');const modal=document.getElementById('result-modal');const modalContentDiv=document.getElementById('modal-results-content');const currentReadingValue=currentReadingInput.value.trim();const previousReadingValue=previousReadingInput.value.trim();if(currentReadingValue===''){modalContentDiv.innerHTML='<p class="error-message">الرجاء إدخال القراءة الحالية على الأقل.</p>';modal.style.display='flex';return false}const currentReading=parseFloat(currentReadingValue);if(isNaN(currentReading)||currentReading<0){modalContentDiv.innerHTML='<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة الحالية.</p>';modal.style.display='flex';return false}let consumption;if(previousReadingValue===''){consumption=currentReading}else{const previousReading=parseFloat(previousReadingValue);if(isNaN(previousReading)||previousReading<0){modalContentDiv.innerHTML='<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة السابقة.</p>';modal.style.display='flex';return false}if(currentReading<previousReading){modalContentDiv.innerHTML='<p class="error-message">القراءة الحالية لا يمكن أن تكون أقل من السابقة.</p>';modal.style.display='flex';return false}consumption=currentReading-previousReading}const subscriptionType=subscriptionTypeInput.value;let totalEnergyCost=0;let governmentSupport=0;let tableRowsHtml='';let remaining=consumption;let tariffs;if(subscriptionType==='supported'){tariffs=[[300,.05],[600,.1],[Infinity,.2]]}else{tariffs=[[1e3,.12],[Infinity,.15]]}let accumulatedConsumption=0;for(let i=0;i<tariffs.length&&remaining>0;i++){const[currentLimit,price]=tariffs[i];const blockStart=accumulatedConsumption+1;const blockEnd=currentLimit===Infinity?Infinity:currentLimit;const blockSize=blockEnd-accumulatedConsumption;const usedInBlock=Math.min(remaining,blockSize);const costInBlock=parseFloat((usedInBlock*price).toFixed(5));totalEnergyCost+=costInBlock;remaining-=usedInBlock;accumulatedConsumption+=usedInBlock;let rangeLabel;if(currentLimit===Infinity){rangeLabel=`أكثر من ${blockStart-1}`}else{rangeLabel=`${blockStart} - ${blockEnd}`}if(usedInBlock>0){tableRowsHtml+=`
                         <tr>
                             <td>${rangeLabel}</td>
                             <td>${formatNumber(usedInBlock)}</td>
                             <td>${formatCurrency(price)}</td>
                             <td>${formatCurrency(costInBlock)}</td>
                         </tr>
-                    `;
-                }
-            }
-            if (subscriptionType === 'supported') {
-                if (consumption >= 51 && consumption <= 200) {
-                    governmentSupport = 2.5;
-                } else if (consumption >= 201 && consumption <= 600) {
-                    governmentSupport = 2.0;
-                }
-            }
-            const wasteFee = 3.0;
-            const tvFee = 1.0;
-            const meterFee = 0.20;
-            const ruralFilss = consumption / 1000; 
-            const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
-            const finalTotal = totalBillBeforeSupport - governmentSupport;
-
-            modalContentDiv.innerHTML = `
-                <h3>تفاصيل الحساب (${subscriptionType === 'supported' ? 'مدعوم' : 'غير مدعوم'})</h3>
+                    `}}if(subscriptionType==='supported'){if(consumption>=51&&consumption<=200){governmentSupport=2.5}else if(consumption>=201&&consumption<=600){governmentSupport=2}}const wasteFee=3;const tvFee=1;const meterFee=.2;const ruralFilss=consumption/1e3;const totalBillBeforeSupport=totalEnergyCost+wasteFee+tvFee+meterFee+ruralFilss;const finalTotal=totalBillBeforeSupport-governmentSupport;modalContentDiv.innerHTML=`
+                <h3>تفاصيل الحساب (${subscriptionType==='supported'?'مدعوم':'غير مدعوم'})</h3>
                 <div class="table-container">
                     <table>
                         <thead>
@@ -578,11 +233,7 @@
                     <p>المبلغ النهائي للفاتورة:</p>
                     <span class="final-total">${formatCurrency(finalTotal)}</span>
                 </div>
-            `;
-            
-            modal.style.display = 'flex';
-            return true;
-        }
+            `;modal.style.display='flex';return true}
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedCurrent = localStorage.getItem('calculator_currentReading');
@@ -620,10 +271,16 @@
 
             currentReadingInput.addEventListener('input', clearOnEmpty);
             previousReadingInput.addEventListener('input', clearOnEmpty);
+
+            // <<< الحل الإضافي هنا
+            // هذا الكود يضمن إعادة حساب التنسيق بعد تحميل كل شيء بالكامل
+            // وهو مفيد بشكل خاص لحالات عدم استقرار حساب الأبعاد عند التحميل الأول
+            setTimeout(() => {
+                document.body.style.opacity = 1;
+            }, 100);
         });
     </script>
     
-    <!-- === سكريبت تسجيل الـ Service Worker === -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
