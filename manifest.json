@@ -4,6 +4,7 @@
     "description": "حاسبة بسيطة لتقدير قيمة فاتورة الكهرباء الشهرية.",
     "start_url": ".",
     "display": "standalone",
+    "display_override": ["fullscreen", "minimal-ui"],
     "background_color": "#ffffff",
     "theme_color": "#1976D2",
     "icons": [
@@ -14,4 +15,3 @@
         }
     ]
 }
-
