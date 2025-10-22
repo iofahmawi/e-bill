@@ -2,11 +2,10 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <!-- تحسين viewport لـ PWA و Safe Area -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حساب فاتورة الكهرباء</title>
     
-    <!-- === الإضافات الجد الجديدة لـ PWA === -->
+    <!-- === الإضافات الجديدة لـ PWA === -->
     <meta name="theme-color" content="#1976D2">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-1024.png">
@@ -34,28 +33,23 @@
             font-family: 'Roboto', sans-serif;
         }
         
-        /* دعم الـ viewport الديناميكي لـ PWA */
         html {
             height: 100%;
-            height: 100dvh;
         }
 
         body {
             margin: 0;
+            padding: 0;
             background-color: var(--text-light);
             direction: rtl;
             text-align: right;
-            min-height: 100vh;
-            min-height: 100dvh;
-            display: flex;
-            flex-direction: column;
+            min-height: 100vh; /* يضمن أن الجسم يأخذ ارتفاع الشاشة بالكامل */
+            display: flex; /* تفعيل نظام Flexbox */
+            flex-direction: column; /* ترتيب العناصر بشكل عمودي */
             overflow-x: hidden;
-
-            /* حشوة سفلية ديناميكية مع دعم Safe Area */
-            padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
-            padding-bottom: max(1.5rem, constant(safe-area-inset-bottom)); /* للتوافق مع iOS القديم */
         }
         
+        /* هذا العنصر سيأخذ كل المساحة المتاحة ويدفع التذييل للأسفل */
         .content-wrapper {
             flex-grow: 1; 
         }
@@ -186,7 +180,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100dvh;
+            height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
             display: none;
             justify-content: center;
@@ -202,7 +196,7 @@
             width: 100%;
             max-width: 450px;
             position: relative;
-            max-height: 90dvh;
+            max-height: 90vh;
             overflow-y: auto;
         }
         
@@ -219,7 +213,6 @@
             color: #aaa;
             cursor: pointer;
             line-height: 1;
-            z-index: 1;
         }
 
         .modal-close:hover {
@@ -319,15 +312,13 @@
             font-size: 1.1rem;
         }
         
-        /* التذييل: تنزيل نصف سم إضافي + مسافة أنيقة */
+        /* === FOOTER THAT STICKS TO THE BOTTOM === */
         .simple-footer {
             text-align: center;
             color: #888;
             font-size: 0.9rem;
-            padding: 20px 20px 0.8cm; /* 0.8cm = 0.5cm إضافي + مسافة أصلية */
-            background-color: var(--text-light);
-            margin-top: auto;
-            width: 100%;
+            padding-top: 20px; /* مسافة بسيطة من الأعلى */
+            margin-bottom: 1.9cm; /* مسافة 1سم في نهاية الصفحة */
         }
         .simple-footer a {
             color: var(--primary-blue);
@@ -338,6 +329,8 @@
         .simple-footer a:hover {
             text-decoration: underline;
         }
+        /* ======================================= */
+
     </style>
 </head>
 <body>
@@ -384,18 +377,22 @@
     <!-- MODAL STRUCTURE -->
     <div id="result-modal" class="modal-overlay">
         <div class="modal-content">
-            <span class="modal-close">×</span>
+            <span class="modal-close">&times;</span>
             <div id="modal-results-content">
                 <!-- Calculation results will be injected here -->
             </div>
         </div>
     </div>
     
+    <!-- === FOOTER THAT STICKS TO THE BOTTOM === -->
     <footer class="simple-footer">
         تم التطوير بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a>
     </footer>
+    <!-- ======================================= -->
+
 
     <script>
+        
         function formatNumber(num) {
             return parseFloat(num).toString();
         }
