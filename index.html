@@ -10,7 +10,7 @@
     <style>
         :root {
             --primary-blue: #1976D2; 
-            --focus-blue: #82B1FF; 
+            --focus-blue: #82B1FF;
             --secondary-green: #34A853; 
             --white: #ffffff;
             --text-dark: #333;
@@ -39,7 +39,6 @@
             color: var(--white);
             padding: 40px 20px 100px;
             text-align: center;
-            position: relative;
         }
 
         .header-blue h2 {
@@ -54,7 +53,7 @@
             color: rgba(255, 255, 255, 0.8);
             margin: 0;
         }
-
+        
         .card {
             background-color: var(--white);
             border-radius: 8px;
@@ -66,19 +65,35 @@
             position: relative;
             z-index: 10;
         }
-
+        
         .input-group {
             margin-bottom: 25px;
         }
 
-        .input-group label {
+        .input-group > label {
             display: block;
-            font-size: 0.95rem;
             color: var(--text-dark);
             margin-bottom: 8px;
             font-weight: 500;
         }
 
+        .readings-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .reading-input {
+            flex: 1;
+            width: 0;
+        }
+
+        .reading-input label {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
         .input-group input[type="number"] {
             width: 100%;
             padding: 12px;
@@ -100,9 +115,11 @@
             margin-bottom: 25px;
         }
 
-        .radio-group label {
+        .radio-group > label {
             font-weight: 500;
             margin-bottom: 10px;
+            display: block;
+            color: var(--text-dark);
         }
 
         .radio-options {
@@ -146,7 +163,7 @@
         #results h3 {
             color: var(--secondary-green); 
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: 500;
         }
 
@@ -172,12 +189,11 @@
             color: var(--text-dark);
             font-weight: 700;
         }
-
-        /* === تم تعديل المسافة هنا === */
+        
         .final-total-section {
             display: block;
             text-align: center;
-            padding-top: 10px; /* تم تقليل المسافة العلوية */
+            padding-top: 10px;
             padding-bottom: 10px; 
         }
         .final-total-section p {
@@ -193,12 +209,11 @@
             display: block;
             margin-top: 10px; 
         }
-
-        /* === تم تعديل المسافة هنا === */
+        
         hr {
             border: none;
             border-top: 1px solid #eee;
-            margin: 10px 0; /* تم تقليل المسافة العمودية */
+            margin: 10px 0;
         }
 
         .table-container {
@@ -248,8 +263,17 @@
 
     <div class="card">
         <div class="input-group">
-            <label for="consumption">كمية الاستهلاك الشهري (كيلوواط/ساعة) *</label> 
-            <input type="number" id="consumption">
+            <label>أدخل قراءة العداد (كيلوواط/ساعة)</label>
+            <div class="readings-container">
+                <div class="reading-input">
+                    <label for="previous-reading">القراءة السابقة</label>
+                    <input type="number" id="previous-reading">
+                </div>
+                <div class="reading-input">
+                    <label for="current-reading">القراءة الحالية *</label>
+                    <input type="number" id="current-reading">
+                </div>
+            </div>
         </div>
 
         <div class="radio-group">
@@ -266,7 +290,7 @@
             </div>
         </div>
 
-        <button type="button" onclick="calculateElectricBill()">احسب القيمة</button>
+        <button type="button" onclick="calculateAndSave()">احسب القيمة</button>
     </div>
 
     <div id="results">
@@ -282,21 +306,62 @@
             const roundedNum = num.toFixed(3); 
             return formatNumber(roundedNum);
         }
-
+        
+        function calculateAndSave() {
+            const success = calculateElectricBill();
+            if (success) {
+                localStorage.setItem('calculator_currentReading', document.getElementById('current-reading').value);
+                localStorage.setItem('calculator_previousReading', document.getElementById('previous-reading').value);
+                localStorage.setItem('calculator_subscriptionType', document.querySelector('input[name="subscription-type"]:checked').value);
+            }
+        }
+        
         function calculateElectricBill() {
             
-            const consumptionInput = document.getElementById('consumption');
-            const consumptionValue = consumptionInput.value.trim();
-            const consumption = parseFloat(consumptionValue);
-            const subscriptionType = document.querySelector('input[name="subscription-type"]:checked').value;
+            const currentReadingInput = document.getElementById('current-reading');
+            const previousReadingInput = document.getElementById('previous-reading');
+            const subscriptionTypeInput = document.querySelector('input[name="subscription-type"]:checked');
             const resultsDiv = document.getElementById('results');
+            
+            const currentReadingValue = currentReadingInput.value.trim();
+            const previousReadingValue = previousReadingInput.value.trim();
 
-            if (consumptionValue === '' || isNaN(consumption) || consumption < 0) {
-                resultsDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للاستهلاك.</p>';
-                resultsDiv.style.display = 'block';
-                return;
+            resultsDiv.style.display = 'block';
+
+            if (currentReadingValue === '') {
+                resultsDiv.innerHTML = '<p class="error-message">الرجاء إدخال القراءة الحالية على الأقل.</p>';
+                return false;
             }
 
+            const currentReading = parseFloat(currentReadingValue);
+            
+            if (isNaN(currentReading) || currentReading < 0) {
+                resultsDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة الحالية.</p>';
+                return false;
+            }
+
+            let consumption;
+
+            if (previousReadingValue === '') {
+                consumption = currentReading;
+            } else {
+                const previousReading = parseFloat(previousReadingValue);
+
+                if (isNaN(previousReading) || previousReading < 0) {
+                    resultsDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة السابقة.</p>';
+                    return false;
+                }
+
+                if (currentReading < previousReading) {
+                    resultsDiv.innerHTML = '<p class="error-message">القراءة الحالية لا يمكن أن تكون أقل من السابقة.</p>';
+                    return false;
+                }
+                
+                consumption = currentReading - previousReading;
+            }
+
+            const subscriptionType = subscriptionTypeInput.value;
+            
             let totalEnergyCost = 0.0;
             let governmentSupport = 0.0;
             let tableRowsHtml = '';
@@ -441,8 +506,43 @@
                 </div>
             `;
             
-            resultsDiv.style.display = 'block';
+            return true;
         }
+
+        // === تم تعديل هذا الجزء بالكامل ===
+        window.addEventListener('DOMContentLoaded', () => {
+            // استعادة الجلسة عند تحميل الصفحة
+            const savedCurrent = localStorage.getItem('calculator_currentReading');
+            if (savedCurrent) {
+                const savedPrevious = localStorage.getItem('calculator_previousReading');
+                const savedSubscription = localStorage.getItem('calculator_subscriptionType');
+                
+                document.getElementById('current-reading').value = savedCurrent;
+                document.getElementById('previous-reading').value = savedPrevious;
+
+                if (savedSubscription) {
+                    document.getElementById(`sub-${savedSubscription}`).checked = true;
+                }
+
+                calculateElectricBill();
+            }
+
+            // إضافة المستمعين لمسح النتائج عند تفريغ الحقول
+            const currentReadingInput = document.getElementById('current-reading');
+            const previousReadingInput = document.getElementById('previous-reading');
+            const resultsDiv = document.getElementById('results');
+
+            const clearOnEmpty = (event) => {
+                if (event.target.value.trim() === '') {
+                    resultsDiv.innerHTML = '';
+                    resultsDiv.style.display = 'none';
+                    localStorage.clear();
+                }
+            };
+
+            currentReadingInput.addEventListener('input', clearOnEmpty);
+            previousReadingInput.addEventListener('input', clearOnEmpty);
+        });
     </script>
 </body>
 </html>
