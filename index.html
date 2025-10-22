@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حساب فاتورة الكهرباء</title>
+    
+    <!-- === الإضافات الجديدة لـ PWA === -->
+    <meta name="theme-color" content="#1976D2">
+    <link rel="manifest" href="manifest.json">
+    <!-- ============================= -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- === تم إضافة رابط الأيقونة هنا === -->
     <link rel="icon" type="image/png" href="icon.png">
     <style>
         :root {
@@ -538,6 +543,21 @@
             currentReadingInput.addEventListener('input', clearOnEmpty);
             previousReadingInput.addEventListener('input', clearOnEmpty);
         });
+    </script>
+    
+    <!-- === سكريبت تسجيل الـ Service Worker === -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
