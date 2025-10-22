@@ -2,13 +2,16 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
+    <!-- تأكد من أن هذا السطر بسيط وبدون إضافات -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حساب فاتورة الكهرباء</title>
     
+    <!-- === الإضافات الجديدة لـ PWA === -->
     <meta name="theme-color" content="#1976D2">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-1024.png">
     <link rel="apple-touch-icon" href="icon-1024.png">
+    <!-- ============================= -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,6 +47,7 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            /* هذا هو الحل: إضافة حشوة سفلية للجسم بالكامل */
             padding-bottom: 1.9cm;
         }
         
@@ -171,6 +175,7 @@
             box-shadow: none;
         }
 
+        /* === MODAL STYLES === */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -615,11 +620,6 @@
 
             currentReadingInput.addEventListener('input', clearOnEmpty);
             previousReadingInput.addEventListener('input', clearOnEmpty);
-
-            // <<< الحل الإضافي هنا
-            // هذا السطر يجبر المتصفح على إعادة "رسم" الصفحة بعد لحظة من التحميل،
-            // مما يحل مشكلة حساب الأبعاد الخاطئة التي تحدث عند الفتح لأول مرة.
-            setTimeout(() => { document.body.style.visibility = 'visible'; }, 100);
         });
     </script>
     
