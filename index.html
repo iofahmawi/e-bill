@@ -13,7 +13,7 @@
     <!-- ============================= -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="icon.png">
     <style>
@@ -65,7 +65,7 @@
         
         .card {
             background-color: var(--white);
-            border-radius: 8px;
+            border-radius: 14px; /* UPDATED */
             box-shadow: var(--shadow-light);
             padding: 25px;
             width: 90%;
@@ -107,7 +107,7 @@
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
-            border-radius: 8px;
+            border-radius: 12px; /* UPDATED */
             font-size: 1.1rem;
             text-align: right; 
             transition: border-color 0.3s, box-shadow 0.3s; 
@@ -147,7 +147,7 @@
             color: var(--white);
             border: none;
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 14px; /* UPDATED */
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
@@ -158,18 +158,58 @@
             background-color: #1565C0;
         }
 
-        #results {
-            width: 90%;
-            max-width: 450px;
-            margin: 20px auto 40px;
-            padding: 20px;
-            background-color: var(--white);
-            border-radius: 8px;
-            box-shadow: var(--shadow-light);
-            display: none; 
+        /* NEW: Removes the blue outline on click */
+        button:focus {
+            outline: none;
+            box-shadow: none;
         }
 
-        #results h3 {
+        /* === MODAL STYLES === */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 14px; /* UPDATED */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        #modal-results-content {
+            padding: 20px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        #modal-results-content h3 {
             color: var(--secondary-green); 
             margin-top: 0;
             margin-bottom: 15px;
@@ -227,7 +267,7 @@
 
         .table-container {
             border: 1px solid #ddd;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
             margin-bottom: 20px;
         }
@@ -302,7 +342,14 @@
         <button type="button" onclick="calculateAndSave()">احسب القيمة</button>
     </div>
 
-    <div id="results">
+    <!-- MODAL STRUCTURE -->
+    <div id="result-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="modal-results-content">
+                <!-- Calculation results will be injected here -->
+            </div>
+        </div>
     </div>
 
     <script>
@@ -326,26 +373,27 @@
         }
         
         function calculateElectricBill() {
-            
             const currentReadingInput = document.getElementById('current-reading');
             const previousReadingInput = document.getElementById('previous-reading');
             const subscriptionTypeInput = document.querySelector('input[name="subscription-type"]:checked');
-            const resultsDiv = document.getElementById('results');
+            
+            const modal = document.getElementById('result-modal');
+            const modalContentDiv = document.getElementById('modal-results-content');
             
             const currentReadingValue = currentReadingInput.value.trim();
             const previousReadingValue = previousReadingInput.value.trim();
 
-            resultsDiv.style.display = 'block';
-
             if (currentReadingValue === '') {
-                resultsDiv.innerHTML = '<p class="error-message">الرجاء إدخال القراءة الحالية على الأقل.</p>';
+                modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال القراءة الحالية على الأقل.</p>';
+                modal.style.display = 'flex';
                 return false;
             }
 
             const currentReading = parseFloat(currentReadingValue);
             
             if (isNaN(currentReading) || currentReading < 0) {
-                resultsDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة الحالية.</p>';
+                modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة الحالية.</p>';
+                modal.style.display = 'flex';
                 return false;
             }
 
@@ -357,12 +405,14 @@
                 const previousReading = parseFloat(previousReadingValue);
 
                 if (isNaN(previousReading) || previousReading < 0) {
-                    resultsDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة السابقة.</p>';
+                    modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة السابقة.</p>';
+                    modal.style.display = 'flex';
                     return false;
                 }
 
                 if (currentReading < previousReading) {
-                    resultsDiv.innerHTML = '<p class="error-message">القراءة الحالية لا يمكن أن تكون أقل من السابقة.</p>';
+                    modalContentDiv.innerHTML = '<p class="error-message">القراءة الحالية لا يمكن أن تكون أقل من السابقة.</p>';
+                    modal.style.display = 'flex';
                     return false;
                 }
                 
@@ -375,7 +425,6 @@
             let governmentSupport = 0.0;
             let tableRowsHtml = '';
             let remaining = consumption;
-
             let tariffs;
             if (subscriptionType === 'supported') {
                 tariffs = [
@@ -389,30 +438,23 @@
                     [Infinity, 0.15]
                 ];
             }
-
             let accumulatedConsumption = 0; 
-            
             for (let i = 0; i < tariffs.length && remaining > 0; i++) {
                 const [currentLimit, price] = tariffs[i];
-                
                 const blockStart = accumulatedConsumption + 1;
                 const blockEnd = currentLimit === Infinity ? Infinity : currentLimit;
                 const blockSize = blockEnd - accumulatedConsumption;
-                
                 const usedInBlock = Math.min(remaining, blockSize);
                 const costInBlock = parseFloat((usedInBlock * price).toFixed(5));
-
                 totalEnergyCost += costInBlock;
                 remaining -= usedInBlock;
                 accumulatedConsumption += usedInBlock; 
-
                 let rangeLabel;
                 if (currentLimit === Infinity) {
                     rangeLabel = `أكثر من ${blockStart - 1}`; 
                 } else {
                     rangeLabel = `${blockStart} - ${blockEnd}`; 
                 }
-                
                 if (usedInBlock > 0) {
                     tableRowsHtml += `
                         <tr>
@@ -424,7 +466,6 @@
                     `;
                 }
             }
-            
             if (subscriptionType === 'supported') {
                 if (consumption >= 51 && consumption <= 200) {
                     governmentSupport = 2.5;
@@ -432,16 +473,14 @@
                     governmentSupport = 2.0;
                 }
             }
-            
             const wasteFee = 3.0;
             const tvFee = 1.0;
             const meterFee = 0.20;
             const ruralFilss = consumption / 1000; 
-            
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
-            resultsDiv.innerHTML = `
+            modalContentDiv.innerHTML = `
                 <h3>تفاصيل الحساب (${subscriptionType === 'supported' ? 'مدعوم' : 'غير مدعوم'})</h3>
                 <div class="table-container">
                     <table>
@@ -463,35 +502,30 @@
                         <span class="result-label">إجمالي كلفة الطاقة:</span>
                         <span class="result-value">${formatCurrency(totalEnergyCost)}</span>
                     </span>
-                    <span></span>
                 </div>
                 <div class="result-row">
                     <span class="result-text-value">
                         <span class="result-label">رسوم النفايات:</span>
                         <span class="result-value">${formatCurrency(wasteFee)}</span>
                     </span>
-                    <span></span>
                 </div>
                 <div class="result-row">
                     <span class="result-text-value">
                         <span class="result-label">رسوم التلفزيون:</span>
                         <span class="result-value">${formatCurrency(tvFee)}</span>
                     </span>
-                    <span></span>
                 </div>
                 <div class="result-row">
                     <span class="result-text-value">
                         <span class="result-label">رسوم العداد:</span>
                         <span class="result-value">${formatCurrency(meterFee)}</span>
                     </span>
-                    <span></span>
                 </div>
                 <div class="result-row">
                     <span class="result-text-value">
                         <span class="result-label">فلس الريف:</span>
                         <span class="result-value">${formatCurrency(ruralFilss)}</span>
                     </span>
-                    <span></span>
                 </div>
                 <hr style="border-top: 1px dashed #ccc;">
                 <div class="result-row">
@@ -499,14 +533,12 @@
                         <span class="result-label">الإجمالي قبل الدعم:</span>
                         <span class="result-value">${formatCurrency(totalBillBeforeSupport)}</span>
                     </span>
-                    <span></span>
                 </div>
                 <div class="result-row">
                     <span class="result-text-value">
                         <span class="result-label">قيمة الدعم الحكومي:</span>
                         <span class="result-value">${formatCurrency(governmentSupport)}</span>
                     </span>
-                    <span></span>
                 </div>
                 <hr style="border-top: 1px dashed #ccc;">
                 <div class="final-total-section">
@@ -515,6 +547,7 @@
                 </div>
             `;
             
+            modal.style.display = 'flex';
             return true;
         }
 
@@ -527,17 +560,27 @@
                 if (savedSubscription) {
                     document.getElementById(`sub-${savedSubscription}`).checked = true;
                 }
-                calculateElectricBill();
             }
+
+            const modal = document.getElementById('result-modal');
+            const closeBtn = document.querySelector('.modal-close');
+            
+            const closeModal = () => {
+                modal.style.display = 'none';
+            };
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
 
             const currentReadingInput = document.getElementById('current-reading');
             const previousReadingInput = document.getElementById('previous-reading');
-            const resultsDiv = document.getElementById('results');
 
             const clearOnEmpty = (event) => {
                 if (event.target.value.trim() === '' && document.getElementById('current-reading').value.trim() === '') {
-                    resultsDiv.innerHTML = '';
-                    resultsDiv.style.display = 'none';
                     localStorage.clear();
                 }
             };
@@ -563,5 +606,3 @@
     </script>
 </body>
 </html>
-
-
