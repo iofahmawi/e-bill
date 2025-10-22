@@ -2,7 +2,7 @@ const CACHE_NAME = 'e-bill-calculator-v1';
 const urlsToCache = [
     '/',
     'index.html',
-    'icon.png'
+    'icon-1024.png'
 ];
 
 // عند تثبيت الـ Service Worker، قم بتخزين الملفات
@@ -29,4 +29,5 @@ self.addEventListener('fetch', event => {
                 return fetch(event.request);
             })
     );
+
 });
