@@ -1,0 +1,21 @@
+{
+    "name": "حاسبة فاتورة الكهرباء",
+    "short_name": "فاتورة الكهرباء",
+    "description": "حاسبة بسيطة لتقدير قيمة فاتورة الكهرباء الشهرية.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#f5f5f5",
+    "theme_color": "#1976D2",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
