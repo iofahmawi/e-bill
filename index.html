@@ -2,8 +2,8 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <!-- التعديل الأول: تمت إضافة viewport-fit=cover هنا -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- تأكد من أن هذا السطر بسيط وبدون إضافات -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حساب فاتورة الكهرباء</title>
     
     <!-- === الإضافات الجديدة لـ PWA === -->
@@ -40,7 +40,6 @@
 
         body {
             margin: 0;
-            padding: 0;
             background-color: var(--text-light);
             direction: rtl;
             text-align: right;
@@ -48,6 +47,8 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            /* هذا هو الحل: إضافة حشوة سفلية للجسم بالكامل */
+            padding-bottom: 1.9cm;
         }
         
         .content-wrapper {
@@ -312,14 +313,11 @@
             font-size: 1.1rem;
         }
         
-        /* التعديل الثاني: تم تحديث هذا الجزء بالكامل */
-        /* === FOOTER THAT STICKS TO THE BOTTOM (PWA SAFE) === */
         .simple-footer {
             text-align: center;
             color: #888;
             font-size: 0.9rem;
             padding-top: 20px;
-            margin-bottom: calc(1.9cm + env(safe-area-inset-bottom));
         }
         .simple-footer a {
             color: var(--primary-blue);
@@ -330,8 +328,6 @@
         .simple-footer a:hover {
             text-decoration: underline;
         }
-        /* ==================================================== */
-
     </style>
 </head>
 <body>
