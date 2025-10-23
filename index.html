@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>حساب فاتورة الكهرباء</title>
     
     <!-- === الإضافات الجديدة لـ PWA === -->
@@ -37,19 +37,21 @@
             height: 100%;
         }
 
+        /* --- التعديل الأول هنا --- */
         body {
             margin: 0;
             padding: 0;
             background-color: var(--text-light);
             direction: rtl;
             text-align: right;
-            min-height: 100vh; /* يضمن أن الجسم يأخذ ارتفاع الشاشة بالكامل */
-            display: flex; /* تفعيل نظام Flexbox */
-            flex-direction: column; /* ترتيب العناصر بشكل عمودي */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             overflow-x: hidden;
+            /* تمت إضافة هذا السطر لمنع المحتوى من الاختفاء خلف التذييل الثابت */
+            padding-bottom: 80px; 
         }
         
-        /* هذا العنصر سيأخذ كل المساحة المتاحة ويدفع التذييل للأسفل */
         .content-wrapper {
             flex-grow: 1; 
         }
@@ -312,13 +314,20 @@
             font-size: 1.1rem;
         }
         
-        /* === FOOTER THAT STICKS TO THE BOTTOM === */
+        /* --- التعديل الثاني هنا --- */
+        /* === FOOTER THAT STICKS TO THE BOTTOM (PWA SAFE) === */
         .simple-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--text-light); /* مهم لإخفاء المحتوى الذي يمر خلفه */
             text-align: center;
             color: #888;
             font-size: 0.9rem;
-            padding-top: 20px; /* مسافة بسيطة من الأعلى */
-            margin-bottom: 1.9cm; /* مسافة 1سم في نهاية الصفحة */
+            padding-top: 20px;
+            padding-bottom: calc(0.6cm + env(safe-area-inset-bottom, 0px));
+            z-index: 20; /* لضمان بقائه فوق العناصر الأخرى */
         }
         .simple-footer a {
             color: var(--primary-blue);
@@ -329,7 +338,7 @@
         .simple-footer a:hover {
             text-decoration: underline;
         }
-        /* ======================================= */
+        /* ==================================================== */
 
     </style>
 </head>
@@ -384,12 +393,9 @@
         </div>
     </div>
     
-    <!-- === FOOTER THAT STICKS TO THE BOTTOM === -->
     <footer class="simple-footer">
         تم التطوير بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a>
     </footer>
-    <!-- ======================================= -->
-
 
     <script>
         
@@ -645,8 +651,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
