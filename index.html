@@ -37,7 +37,6 @@
             height: 100%;
         }
 
-        /* --- التعديل الأول هنا --- */
         body {
             margin: 0;
             padding: 0;
@@ -48,7 +47,6 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            /* تمت إضافة هذا السطر لمنع المحتوى من الاختفاء خلف التذييل الثابت */
             padding-bottom: 80px; 
         }
         
@@ -206,7 +204,9 @@
             padding: 20px;
         }
 
+        /* --- التعديل هنا --- */
         .modal-close {
+            display: none; /* تم إخفاء زر الإغلاق */
             position: absolute;
             top: 10px;
             left: 15px;
@@ -216,6 +216,7 @@
             cursor: pointer;
             line-height: 1;
         }
+        /* ------------------- */
 
         .modal-close:hover {
             color: #333;
@@ -314,20 +315,18 @@
             font-size: 1.1rem;
         }
         
-        /* --- التعديل الثاني هنا --- */
-        /* === FOOTER THAT STICKS TO THE BOTTOM (PWA SAFE) === */
         .simple-footer {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: var(--text-light); /* مهم لإخفاء المحتوى الذي يمر خلفه */
+            background-color: var(--text-light);
             text-align: center;
             color: #888;
             font-size: 0.9rem;
             padding-top: 20px;
             padding-bottom: calc(0.55cm + env(safe-area-inset-bottom, 0px));
-            z-index: 20; /* لضمان بقائه فوق العناصر الأخرى */
+            z-index: 20;
         }
         .simple-footer a {
             color: var(--primary-blue);
@@ -338,7 +337,6 @@
         .simple-footer a:hover {
             text-decoration: underline;
         }
-        /* ==================================================== */
 
     </style>
 </head>
@@ -651,4 +649,3 @@
     </script>
 </body>
 </html>
-
