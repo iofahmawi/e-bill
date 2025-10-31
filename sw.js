@@ -1,11 +1,10 @@
-const CACHE_NAME = 'e-bill-calculator-cache-v1';
+const CACHE_NAME = 'e-bill-calculator-cache-v2';
 const urlsToCache = [
   './',
   'index.html',
   'manifest.json',
   'icon-1024.png',
-  'icon.png',
-  'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap'
+  'icon.png'
 ];
 
 self.addEventListener('install', event => {
