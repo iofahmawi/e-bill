@@ -1,10 +1,8 @@
-const CACHE_NAME = 'e-bill-calculator-v2';
+const CACHE_NAME = 'e-bill-calculator-v3'; // غيرنا الرقم لفرض التحديث
 const urlsToCache = [
     '/',
     'index.html',
     'manifest.json',
-    'icon-192.png',
-    'icon-512.png',
     'icon-1024.png'
 ];
 
