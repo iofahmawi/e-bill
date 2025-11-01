@@ -14,7 +14,11 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- التحميل المسبق للخط لمنع "القفزة" عند التحديث -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"></noscript>
+    
     <link rel="icon" type="image/png" href="icon.png">
     <style>
         :root {
@@ -46,12 +50,12 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
-            padding-bottom: 80px; 
+            /* هذا السطر يمنع خاصية "السحب للتحديث" في المتصفح */
+            overscroll-behavior-y: contain;
         }
         
         .content-wrapper {
-            flex-grow: 1; 
+            flex-grow: 1;
         }
 
         .header-blue {
@@ -174,7 +178,6 @@
             box-shadow: none;
         }
 
-        /* === MODAL STYLES === */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -204,9 +207,8 @@
             padding: 20px;
         }
 
-        /* --- التعديل هنا --- */
         .modal-close {
-            display: none; /* تم إخفاء زر الإغلاق */
+            display: none;
             position: absolute;
             top: 10px;
             left: 15px;
@@ -216,7 +218,6 @@
             cursor: pointer;
             line-height: 1;
         }
-        /* ------------------- */
 
         .modal-close:hover {
             color: #333;
@@ -316,16 +317,13 @@
         }
         
         .simple-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            flex-shrink: 0;
             background-color: var(--text-light);
             text-align: center;
             color: #888;
             font-size: 0.9rem;
-            padding-top: 20px;
-            padding-bottom: calc(0.55cm + env(safe-area-inset-bottom, 0px));
+            padding-top: 15px;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
             z-index: 20;
         }
         .simple-footer a {
