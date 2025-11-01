@@ -13,7 +13,7 @@
     <!-- ============================= -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="icon.png">
     <style>
@@ -23,7 +23,7 @@
             --secondary-green: #34A853; 
             --white: #ffffff;
             --text-dark: #333;
-            --text-light: #f5f5ff; /* تم تعديل اللون قليلاً لتمييزه عن الأبيض */
+            --text-light: #f5f5f5;
             --error-red: #D93025;
             --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
@@ -33,7 +33,6 @@
             font-family: 'Roboto', sans-serif;
         }
         
-        /* --- التعديل هنا: جعل الصفحة ثابتة --- */
         html {
             height: 100%;
         }
@@ -44,17 +43,15 @@
             background-color: var(--text-light);
             direction: rtl;
             text-align: right;
-            height: 100vh; /* استخدام vh لضمان الارتفاع الكامل */
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* منع التمرير على مستوى الصفحة */
+            overflow-x: hidden;
+            padding-bottom: 80px; 
         }
         
-        /* --- التعديل هنا: جعل المحتوى ينمو ويقبل التمرير الداخلي --- */
         .content-wrapper {
             flex-grow: 1; 
-            overflow-y: auto; /* السماح بالتمرير داخل هذا الجزء فقط إذا لزم الأمر */
-            padding-bottom: 30px; /* إضافة مسافة في الأسفل داخل المنطقة القابلة للتمرير */
         }
 
         .header-blue {
@@ -207,8 +204,9 @@
             padding: 20px;
         }
 
+        /* --- التعديل هنا --- */
         .modal-close {
-            display: none;
+            display: none; /* تم إخفاء زر الإغلاق */
             position: absolute;
             top: 10px;
             left: 15px;
@@ -218,6 +216,7 @@
             cursor: pointer;
             line-height: 1;
         }
+        /* ------------------- */
 
         .modal-close:hover {
             color: #333;
@@ -316,18 +315,18 @@
             font-size: 1.1rem;
         }
         
-        /* --- التعديل هنا: تحويل الفوتر إلى عنصر عادي --- */
         .simple-footer {
-            /* position: fixed; <-- تم إلغاء هذه الخاصية */ 
-            flex-shrink: 0; /* منعه من الانكماش */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
             background-color: var(--text-light);
             text-align: center;
             color: #888;
             font-size: 0.9rem;
-            padding: 20px 0;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* مسافة آمنة للأسفل */
+            padding-top: 20px;
+            padding-bottom: calc(0.55cm + env(safe-area-inset-bottom, 0px));
             z-index: 20;
-            border-top: 1px solid #e0e0e0; /* إضافة خط فاصل */
         }
         .simple-footer a {
             color: var(--primary-blue);
