@@ -203,10 +203,9 @@
         #modal-results-content {
             padding: 20px;
         }
-
-        /* --- التعديل هنا --- */
+        
         .modal-close {
-            display: none; /* تم إخفاء زر الإغلاق */
+            display: none;
             position: absolute;
             top: 10px;
             left: 15px;
@@ -216,7 +215,6 @@
             cursor: pointer;
             line-height: 1;
         }
-        /* ------------------- */
 
         .modal-close:hover {
             color: #333;
@@ -540,6 +538,14 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="result-row">
+                    <span class="result-text-value">
+                        <span class="result-label">إجمالي الاستهلاك (كيلوواط):</span>
+                        <span class="result-value">${formatNumber(consumption)}</span>
+                    </span>
+                </div>
+
                 <div class="result-row">
                     <span class="result-text-value">
                         <span class="result-label">إجمالي كلفة الطاقة:</span>
