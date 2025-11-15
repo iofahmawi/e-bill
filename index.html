@@ -174,7 +174,6 @@
             box-shadow: none;
         }
 
-        /* === MODAL STYLES === */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -223,8 +222,7 @@
         #modal-results-content h3 {
             color: var(--secondary-green); 
             margin-top: 0;
-            margin-bottom: 15px;
-            font-weight: 500;
+            margin-bottom: 20px;
         }
 
         .result-row {
@@ -521,9 +519,14 @@
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
+            /* === التعديلات هنا === */
             modalContentDiv.innerHTML = `
                 <h3>تفاصيل الحساب (${subscriptionType === 'supported' ? 'مدعوم' : 'غير مدعوم'})</h3>
-                <div class="table-container">
+                
+                <div class="result-row" style="margin-top: 0; margin-bottom: 5px;">
+                    <span class="result-label" style="font-weight: bold;">تفاصيل استهلاك ${formatNumber(consumption)} كيلوواط:</span>
+                </div>
+                <div class="table-container" style="margin-bottom: 15px;">
                     <table>
                         <thead>
                             <tr>
@@ -539,45 +542,31 @@
                     </table>
                 </div>
 
-                <div class="result-row">
-                    <span class="result-text-value">
-                        <span class="result-label">إجمالي الاستهلاك (كيلوواط):</span>
-                        <span class="result-value">${formatNumber(consumption)}</span>
-                    </span>
+                <div class="result-row" style="margin-bottom: 5px;">
+                    <span class="result-label" style="font-weight: bold;">رسوم إضافية:</span>
                 </div>
-
-                <div class="result-row">
-                    <span class="result-text-value">
-                        <span class="result-label">إجمالي كلفة الطاقة:</span>
-                        <span class="result-value">${formatCurrency(totalEnergyCost)}</span>
-                    </span>
+                <div class="table-container" style="margin-bottom: 0;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>تلفزيون</th>
+                                <th>نفايات</th>
+                                <th>عداد</th>
+                                <th>فلس الريف</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${formatCurrency(tvFee)}</td>
+                                <td>${formatCurrency(wasteFee)}</td>
+                                <td>${formatCurrency(meterFee)}</td>
+                                <td>${formatCurrency(ruralFilss)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="result-row">
-                    <span class="result-text-value">
-                        <span class="result-label">رسوم النفايات:</span>
-                        <span class="result-value">${formatCurrency(wasteFee)}</span>
-                    </span>
-                </div>
-                <div class="result-row">
-                    <span class="result-text-value">
-                        <span class="result-label">رسوم التلفزيون:</span>
-                        <span class="result-value">${formatCurrency(tvFee)}</span>
-                    </span>
-                </div>
-                <div class="result-row">
-                    <span class="result-text-value">
-                        <span class="result-label">رسوم العداد:</span>
-                        <span class="result-value">${formatCurrency(meterFee)}</span>
-                    </span>
-                </div>
-                <div class="result-row">
-                    <span class="result-text-value">
-                        <span class="result-label">فلس الريف:</span>
-                        <span class="result-value">${formatCurrency(ruralFilss)}</span>
-                    </span>
-                </div>
-                <hr style="border-top: 1px dashed #ccc;">
-                <div class="result-row">
+                
+                <div class="result-row" style="margin-top: 15px;">
                     <span class="result-text-value">
                         <span class="result-label">الإجمالي قبل الدعم:</span>
                         <span class="result-value">${formatCurrency(totalBillBeforeSupport)}</span>
@@ -589,12 +578,13 @@
                         <span class="result-value">${formatCurrency(governmentSupport)}</span>
                     </span>
                 </div>
-                <hr style="border-top: 1px dashed #ccc;">
-                <div class="final-total-section">
+                <hr style="margin-top: 15px;">
+                <div class="final-total-section" style="padding-bottom: 0;">
                     <p>المبلغ النهائي للفاتورة:</p>
                     <span class="final-total">${formatCurrency(finalTotal)}</span>
                 </div>
             `;
+            /* ===================== */
             
             modal.style.display = 'flex';
             return true;
@@ -639,7 +629,6 @@
         });
     </script>
     
-    <!-- === سكريبت تسجيل الـ Service Worker === -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
