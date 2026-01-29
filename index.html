@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>حساب فاتورة الكهرباء</title>
     
-    <!-- === الإضافات الجديدة لـ PWA === -->
     <meta name="theme-color" content="#1976D2">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-1024.png">
     <link rel="apple-touch-icon" href="icon-1024.png">
-    <!-- ============================= -->
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -33,25 +30,25 @@
             font-family: 'Roboto', sans-serif;
         }
         
-        html {
+        html, body {
             height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
         }
 
         body {
-            margin: 0;
-            padding: 0;
             background-color: var(--text-light);
             direction: rtl;
             text-align: right;
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
-            padding-bottom: 80px; 
         }
         
         .content-wrapper {
             flex-grow: 1; 
+            display: flex;
+            flex-direction: column;
         }
 
         .header-blue {
@@ -81,7 +78,7 @@
             padding: 25px;
             width: 90%;
             max-width: 450px;
-            margin: -70px auto 20px;
+            margin: -70px auto 0;
             position: relative;
             z-index: 10;
         }
@@ -169,11 +166,6 @@
             background-color: #1565C0;
         }
 
-        button:focus {
-            outline: none;
-            box-shadow: none;
-        }
-
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -201,22 +193,6 @@
         
         #modal-results-content {
             padding: 20px;
-        }
-        
-        .modal-close {
-            display: none;
-            position: absolute;
-            top: 10px;
-            left: 15px;
-            font-size: 28px;
-            font-weight: bold;
-            color: #aaa;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .modal-close:hover {
-            color: #333;
         }
         
         #modal-results-content h3 {
@@ -293,10 +269,6 @@
             text-align: center;
         }
         
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
         th {
             background-color: #f0f8ff;
             color: var(--primary-blue);
@@ -312,26 +284,17 @@
         }
         
         .simple-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
             background-color: var(--text-light);
             text-align: center;
             color: #888;
             font-size: 0.9rem;
-            padding-top: 20px;
-            padding-bottom: calc(0.55cm + env(safe-area-inset-bottom, 0px));
-            z-index: 20;
+            padding: 20px 0 calc(20px + env(safe-area-inset-bottom, 0px));
         }
+
         .simple-footer a {
             color: var(--primary-blue);
             font-weight: 500;
             text-decoration: none;
-            transition: text-decoration 0.3s;
-        }
-        .simple-footer a:hover {
-            text-decoration: underline;
         }
 
     </style>
@@ -346,15 +309,19 @@
 
         <div class="card">
             <div class="input-group">
-                <label>أدخل قراءة العداد (كيلوواط/ساعة)</label>
+                <label>أدخل القراءات وتاريخ الفاتورة السابقة</label>
                 <div class="readings-container">
                     <div class="reading-input">
-                        <label for="previous-reading">القراءة السابقة</label>
+                        <label for="previous-reading">السابقة</label>
                         <input type="number" id="previous-reading">
                     </div>
                     <div class="reading-input">
-                        <label for="current-reading">القراءة الحالية *</label>
+                        <label for="current-reading">الحالية</label>
                         <input type="number" id="current-reading">
+                    </div>
+                    <div class="reading-input">
+                        <label for="reading-day">تاريخ الفاتورة *</label>
+                        <input type="number" id="reading-day">
                     </div>
                 </div>
             </div>
@@ -377,13 +344,9 @@
         </div>
     </div>
 
-    <!-- MODAL STRUCTURE -->
     <div id="result-modal" class="modal-overlay">
         <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <div id="modal-results-content">
-                <!-- Calculation results will be injected here -->
-            </div>
+            <div id="modal-results-content"></div>
         </div>
     </div>
     
@@ -392,14 +355,12 @@
     </footer>
 
     <script>
-        
         function formatNumber(num) {
             return parseFloat(num).toString();
         }
 
         function formatCurrency(num) {
-            const roundedNum = num.toFixed(3); 
-            return formatNumber(roundedNum);
+            return formatNumber(num.toFixed(3));
         }
         
         function calculateAndSave() {
@@ -407,6 +368,7 @@
             if (success) {
                 localStorage.setItem('calculator_currentReading', document.getElementById('current-reading').value);
                 localStorage.setItem('calculator_previousReading', document.getElementById('previous-reading').value);
+                localStorage.setItem('calculator_day', document.getElementById('reading-day').value);
                 localStorage.setItem('calculator_subscriptionType', document.querySelector('input[name="subscription-type"]:checked').value);
             }
         }
@@ -414,6 +376,7 @@
         function calculateElectricBill() {
             const currentReadingInput = document.getElementById('current-reading');
             const previousReadingInput = document.getElementById('previous-reading');
+            const readingDayInput = document.getElementById('reading-day');
             const subscriptionTypeInput = document.querySelector('input[name="subscription-type"]:checked');
             
             const modal = document.getElementById('result-modal');
@@ -421,6 +384,7 @@
             
             const currentReadingValue = currentReadingInput.value.trim();
             const previousReadingValue = previousReadingInput.value.trim();
+            const readingDayValue = readingDayInput.value.trim();
 
             if (currentReadingValue === '') {
                 modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال القراءة الحالية على الأقل.</p>';
@@ -429,54 +393,41 @@
             }
 
             const currentReading = parseFloat(currentReadingValue);
-            
-            if (isNaN(currentReading) || currentReading < 0) {
-                modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة الحالية.</p>';
+            const previousReading = previousReadingValue === '' ? 0 : parseFloat(previousReadingValue);
+
+            if (currentReading < previousReading) {
+                modalContentDiv.innerHTML = '<p class="error-message">القراءة الحالية لا يمكن أن تكون أقل من السابقة.</p>';
                 modal.style.display = 'flex';
                 return false;
             }
-
-            let consumption;
-
-            if (previousReadingValue === '') {
-                consumption = currentReading;
-            } else {
-                const previousReading = parseFloat(previousReadingValue);
-
-                if (isNaN(previousReading) || previousReading < 0) {
-                    modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال رقم صحيح وموجب للقراءة السابقة.</p>';
-                    modal.style.display = 'flex';
-                    return false;
-                }
-
-                if (currentReading < previousReading) {
-                    modalContentDiv.innerHTML = '<p class="error-message">القراءة الحالية لا يمكن أن تكون أقل من السابقة.</p>';
-                    modal.style.display = 'flex';
-                    return false;
-                }
                 
-                consumption = currentReading - previousReading;
+            const consumption = currentReading - previousReading;
+            const subscriptionType = subscriptionTypeInput.value;
+            const subTypeText = subscriptionType === 'supported' ? 'مدعوم' : 'غير مدعوم';
+
+            let avgRowHtml = "";
+            if (readingDayValue !== "") {
+                const day = parseInt(readingDayValue);
+                const now = new Date();
+                const start = new Date(now.getFullYear(), now.getMonth(), day);
+                if (day > now.getDate()) start.setMonth(start.getMonth() - 1);
+                const diffDays = Math.floor((now - start) / 86400000) || 1;
+                const dailyAvg = (consumption / diffDays).toFixed(2);
+                
+                avgRowHtml = `
+                    <tr style="background-color: #ffffff;">
+                        <td colspan="4" style="text-align: center; color: var(--text-dark); font-size: 0.85rem; border-top: 1px solid #eee;">
+                            المتوسط اليومي لـ ${diffDays} أيام هو ${dailyAvg} كيلوواط
+                        </td>
+                    </tr>`;
             }
 
-            const subscriptionType = subscriptionTypeInput.value;
-            
             let totalEnergyCost = 0.0;
             let governmentSupport = 0.0;
             let tableRowsHtml = '';
             let remaining = consumption;
-            let tariffs;
-            if (subscriptionType === 'supported') {
-                tariffs = [
-                    [300, 0.05],
-                    [600, 0.10],
-                    [Infinity, 0.20] 
-                ];
-            } else {
-                tariffs = [
-                    [1000, 0.12],
-                    [Infinity, 0.15]
-                ];
-            }
+            let tariffs = subscriptionType === 'supported' ? [[300, 0.05], [600, 0.10], [Infinity, 0.20]] : [[1000, 0.12], [Infinity, 0.15]];
+
             let accumulatedConsumption = 0; 
             for (let i = 0; i < tariffs.length && remaining > 0; i++) {
                 const [currentLimit, price] = tariffs[i];
@@ -488,157 +439,61 @@
                 totalEnergyCost += costInBlock;
                 remaining -= usedInBlock;
                 accumulatedConsumption += usedInBlock; 
-                let rangeLabel;
-                if (currentLimit === Infinity) {
-                    rangeLabel = `أكثر من ${blockStart - 1}`; 
-                } else {
-                    rangeLabel = `${blockStart} - ${blockEnd}`; 
-                }
+                let rangeLabel = currentLimit === Infinity ? `أكثر من ${blockStart - 1}` : `${blockStart} - ${blockEnd}`;
                 if (usedInBlock > 0) {
-                    tableRowsHtml += `
-                        <tr>
-                            <td>${rangeLabel}</td>
-                            <td>${formatNumber(usedInBlock)}</td>
-                            <td>${formatCurrency(price)}</td>
-                            <td>${formatCurrency(costInBlock)}</td>
-                        </tr>
-                    `;
+                    tableRowsHtml += `<tr><td>${rangeLabel}</td><td>${formatNumber(usedInBlock)}</td><td>${formatCurrency(price)}</td><td>${formatCurrency(costInBlock)}</td></tr>`;
                 }
             }
+
             if (subscriptionType === 'supported') {
-                if (consumption >= 51 && consumption <= 200) {
-                    governmentSupport = 2.5;
-                } else if (consumption >= 201 && consumption <= 600) {
-                    governmentSupport = 2.0;
-                }
+                if (consumption >= 51 && consumption <= 200) governmentSupport = 2.5;
+                else if (consumption >= 201 && consumption <= 600) governmentSupport = 2.0;
             }
-            const wasteFee = 3.0;
-            const tvFee = 1.0;
-            const meterFee = 0.20;
-            const ruralFilss = consumption / 1000; 
+
+            const wasteFee = 3.0, tvFee = 1.0, meterFee = 0.20, ruralFilss = consumption / 1000; 
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
-            /* === التعديلات هنا === */
             modalContentDiv.innerHTML = `
-                <h3>تفاصيل الحساب (${subscriptionType === 'supported' ? 'مدعوم' : 'غير مدعوم'})</h3>
-                
-                <div class="result-row" style="margin-top: 0; margin-bottom: 5px;">
-                    <span class="result-label" style="font-weight: bold;">تفاصيل استهلاك ${formatNumber(consumption)} كيلوواط:</span>
-                </div>
+                <h3>تفاصيل الحساب (${subTypeText})</h3>
+                <div class="result-row" style="margin-top: 0; margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">تفاصيل استهلاك ${formatNumber(consumption)} كيلوواط:</span></div>
                 <div class="table-container" style="margin-bottom: 15px;">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>الشريحة</th>
-                                <th>الاستهلاك</th>
-                                <th>التعرفة</th>
-                                <th>الإجمالي</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRowsHtml}
-                        </tbody>
+                        <thead><tr><th>الشريحة</th><th>الاستهلاك</th><th>التعرفة</th><th>الإجمالي</th></tr></thead>
+                        <tbody>${tableRowsHtml}${avgRowHtml}</tbody>
                     </table>
                 </div>
-
-                <div class="result-row" style="margin-bottom: 5px;">
-                    <span class="result-label" style="font-weight: bold;">رسوم إضافية:</span>
-                </div>
+                <div class="result-row" style="margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">رسوم إضافية:</span></div>
                 <div class="table-container" style="margin-bottom: 0;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>تلفزيون</th>
-                                <th>نفايات</th>
-                                <th>عداد</th>
-                                <th>فلس الريف</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>${formatCurrency(tvFee)}</td>
-                                <td>${formatCurrency(wasteFee)}</td>
-                                <td>${formatCurrency(meterFee)}</td>
-                                <td>${formatCurrency(ruralFilss)}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <table><thead><tr><th>تلفزيون</th><th>نفايات</th><th>عداد</th><th>فلس الريف</th></tr></thead>
+                    <tbody><tr><td>${formatCurrency(tvFee)}</td><td>${formatCurrency(wasteFee)}</td><td>${formatCurrency(meterFee)}</td><td>${formatCurrency(ruralFilss)}</td></tr></tbody></table>
                 </div>
-                
-                <div class="result-row" style="margin-top: 15px;">
-                    <span class="result-text-value">
-                        <span class="result-label">الإجمالي قبل الدعم:</span>
-                        <span class="result-value">${formatCurrency(totalBillBeforeSupport)}</span>
-                    </span>
-                </div>
-                <div class="result-row">
-                    <span class="result-text-value">
-                        <span class="result-label">قيمة الدعم الحكومي:</span>
-                        <span class="result-value">${formatCurrency(governmentSupport)}</span>
-                    </span>
-                </div>
+                <div class="result-row" style="margin-top: 15px;"><span class="result-text-value"><span class="result-label">الإجمالي قبل الدعم:</span><span class="result-value">${formatCurrency(totalBillBeforeSupport)}</span></span></div>
+                <div class="result-row"><span class="result-text-value"><span class="result-label">قيمة الدعم الحكومي:</span><span class="result-value">${formatCurrency(governmentSupport)}</span></span></div>
                 <hr style="margin-top: 15px;">
-                <div class="final-total-section" style="padding-bottom: 0;">
-                    <p>المبلغ النهائي للفاتورة:</p>
-                    <span class="final-total">${formatCurrency(finalTotal)}</span>
-                </div>
+                <div class="final-total-section" style="padding-bottom: 0;"><p>المبلغ النهائي للفاتورة:</p><span>${formatCurrency(finalTotal)}</span></div>
             `;
-            /* ===================== */
             
             modal.style.display = 'flex';
+            modal.onclick = (event) => { if (event.target === modal) modal.style.display = 'none'; };
             return true;
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedCurrent = localStorage.getItem('calculator_currentReading');
-            if (savedCurrent) {
-                document.getElementById('current-reading').value = savedCurrent;
+        window.onload = () => {
+            if (localStorage.getItem('calculator_currentReading')) {
+                document.getElementById('current-reading').value = localStorage.getItem('calculator_currentReading');
                 document.getElementById('previous-reading').value = localStorage.getItem('calculator_previousReading');
-                const savedSubscription = localStorage.getItem('calculator_subscriptionType');
-                if (savedSubscription) {
-                    document.getElementById(`sub-${savedSubscription}`).checked = true;
-                }
+                document.getElementById('reading-day').value = localStorage.getItem('calculator_day') || '';
+                const savedSub = localStorage.getItem('calculator_subscriptionType');
+                if (savedSub) document.getElementById(`sub-${savedSub}`).checked = true;
             }
+        };
 
-            const modal = document.getElementById('result-modal');
-            const closeBtn = document.querySelector('.modal-close');
-            
-            const closeModal = () => {
-                modal.style.display = 'none';
-            };
-
-            closeBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    closeModal();
-                }
-            });
-
-            const currentReadingInput = document.getElementById('current-reading');
-            const previousReadingInput = document.getElementById('previous-reading');
-
-            const clearOnEmpty = (event) => {
-                if (event.target.value.trim() === '' && document.getElementById('current-reading').value.trim() === '') {
-                    localStorage.clear();
-                }
-            };
-
-            currentReadingInput.addEventListener('input', clearOnEmpty);
-            previousReadingInput.addEventListener('input', clearOnEmpty);
-        });
-    </script>
-    
-    <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed: ', error);
-                    });
+                .then(reg => console.log('Service Worker Registered'))
+                .catch(err => console.log('Registration Failed', err));
             });
         }
     </script>
