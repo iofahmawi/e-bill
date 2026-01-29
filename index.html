@@ -282,6 +282,15 @@
             margin: 10px 0;
             font-size: 1.1rem;
         }
+
+        /* تنسيق سطر المتوسط اليومي - تمت زيادة الـ margin-top */
+        .daily-avg-container {
+            text-align: center;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            margin-top: 1px; 
+            margin-bottom: 20px;
+        }
         
         .simple-footer {
             background-color: var(--text-light);
@@ -405,7 +414,7 @@
             const subscriptionType = subscriptionTypeInput.value;
             const subTypeText = subscriptionType === 'supported' ? 'مدعوم' : 'غير مدعوم';
 
-            let avgRowHtml = "";
+            let avgDivHtml = "";
             if (readingDayValue !== "") {
                 const day = parseInt(readingDayValue);
                 const now = new Date();
@@ -414,12 +423,10 @@
                 const diffDays = Math.floor((now - start) / 86400000) || 1;
                 const dailyAvg = (consumption / diffDays).toFixed(2);
                 
-                avgRowHtml = `
-                    <tr style="background-color: #ffffff;">
-                        <td colspan="4" style="text-align: center; color: var(--text-dark); font-size: 0.85rem; border-top: 1px solid #eee;">
-                            المتوسط اليومي لـ ${diffDays} أيام هو ${dailyAvg} كيلوواط
-                        </td>
-                    </tr>`;
+                avgDivHtml = `
+                    <div class="daily-avg-container">
+                        المتوسط اليومي لـ ${diffDays} أيام هو ${dailyAvg} كيلوواط
+                    </div>`;
             }
 
             let totalEnergyCost = 0.0;
@@ -460,9 +467,10 @@
                 <div class="table-container" style="margin-bottom: 15px;">
                     <table>
                         <thead><tr><th>الشريحة</th><th>الاستهلاك</th><th>التعرفة</th><th>الإجمالي</th></tr></thead>
-                        <tbody>${tableRowsHtml}${avgRowHtml}</tbody>
+                        <tbody>${tableRowsHtml}</tbody>
                     </table>
                 </div>
+                ${avgDivHtml}
                 <div class="result-row" style="margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">رسوم إضافية:</span></div>
                 <div class="table-container" style="margin-bottom: 0;">
                     <table><thead><tr><th>تلفزيون</th><th>نفايات</th><th>عداد</th><th>فلس الريف</th></tr></thead>
