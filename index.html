@@ -94,17 +94,22 @@
             font-weight: 500;
         }
 
+        /* تعديل لضمان تساوي عرض الحقلين تماماً */
         .readings-container {
             display: flex;
             gap: 15px;
+            margin-bottom: 15px;
         }
 
         .reading-input {
-            flex: 1;
-            width: 0;
+            flex: 1; /* يضمن توزيعاً متساوياً */
         }
 
-        .reading-input label {
+        .date-input-wrapper {
+            width: 100%;
+        }
+
+        .reading-input label, .date-input-wrapper label {
             display: block;
             font-size: 0.85rem;
             color: #666;
@@ -283,7 +288,6 @@
             font-size: 1.1rem;
         }
 
-        /* تم تعديل المحاذاة لليمين هنا */
         .daily-avg-container {
             text-align: right;
             color: var(--text-dark);
@@ -319,7 +323,7 @@
 
         <div class="card">
             <div class="input-group">
-                <label>أدخل القراءات وتاريخ الفاتورة السابقة</label>
+                <label>أدخل قراءة العداد</label>
                 <div class="readings-container">
                     <div class="reading-input">
                         <label for="previous-reading">السابقة</label>
@@ -329,10 +333,10 @@
                         <label for="current-reading">الحالية</label>
                         <input type="number" id="current-reading">
                     </div>
-                    <div class="reading-input">
-                        <label for="reading-day">تاريخ الفاتورة *</label>
-                        <input type="number" id="reading-day">
-                    </div>
+                </div>
+                <div class="date-input-wrapper">
+                    <label for="reading-day">تاريخ الفاتورة السابقة (إختياري)</label>
+                    <input type="number" id="reading-day">
                 </div>
             </div>
 
