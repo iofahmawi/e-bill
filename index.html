@@ -295,6 +295,11 @@
             margin-bottom: 20px;
             padding: 0 5px;
         }
+
+        /* تنسيق الأرقام العريضة داخل حاوية المعدل اليومي */
+        .daily-avg-container strong {
+            font-weight: 700;
+        }
         
         .simple-footer {
             background-color: var(--text-light);
@@ -426,7 +431,7 @@
                 if (day > now.getDate()) start.setMonth(start.getMonth() - 1);
                 const diffDays = Math.floor((now - start) / 86400000) || 1;
                 
-                // التعديل المطلوب: استخدام formatNumber لإزالة الأصفار في حال الرقم صحيح
+                // تنسيق الرقم وحذف الأصفار
                 const dailyAvgRaw = (consumption / diffDays).toFixed(2);
                 const dailyAvg = formatNumber(dailyAvgRaw);
                 
@@ -436,14 +441,15 @@
                 } else if (diffDays === 2) {
                     dayLabel = "يومين";
                 } else if (diffDays >= 3 && diffDays <= 10) {
-                    dayLabel = diffDays + " أيام";
+                    dayLabel = `<strong>${diffDays}</strong> أيام`;
                 } else {
-                    dayLabel = diffDays + " يوم";
+                    dayLabel = `<strong>${diffDays}</strong> يوم`;
                 }
 
+                // إضافة الوسم <strong> للأرقام لتمييزها
                 avgDivHtml = `
                     <div class="daily-avg-container">
-                        معدل الاستهلاك اليومي خلال ${dayLabel} ${dailyAvg} كيلوواط
+                        معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> كيلوواط
                     </div>`;
             }
 
