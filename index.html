@@ -94,7 +94,6 @@
             font-weight: 500;
         }
 
-        /* تعديل لضمان تساوي عرض الحقلين تماماً */
         .readings-container {
             display: flex;
             gap: 15px;
@@ -102,7 +101,7 @@
         }
 
         .reading-input {
-            flex: 1; /* يضمن توزيعاً متساوياً */
+            flex: 1;
         }
 
         .date-input-wrapper {
@@ -428,9 +427,20 @@
                 const diffDays = Math.floor((now - start) / 86400000) || 1;
                 const dailyAvg = (consumption / diffDays).toFixed(2);
                 
+                let dayLabel = "";
+                if (diffDays === 1) {
+                    dayLabel = "يوم واحد";
+                } else if (diffDays === 2) {
+                    dayLabel = "يومين";
+                } else if (diffDays >= 3 && diffDays <= 10) {
+                    dayLabel = diffDays + " أيام";
+                } else {
+                    dayLabel = diffDays + " يوم";
+                }
+
                 avgDivHtml = `
                     <div class="daily-avg-container">
-                        المتوسط اليومي لـ ${diffDays} أيام هو ${dailyAvg} كيلوواط
+                        المتوسط اليومي خلال ${dayLabel} هو ${dailyAvg} كيلوواط
                     </div>`;
             }
 
