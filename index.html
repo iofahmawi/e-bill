@@ -425,7 +425,10 @@
                 const start = new Date(now.getFullYear(), now.getMonth(), day);
                 if (day > now.getDate()) start.setMonth(start.getMonth() - 1);
                 const diffDays = Math.floor((now - start) / 86400000) || 1;
-                const dailyAvg = (consumption / diffDays).toFixed(2);
+                
+                // التعديل المطلوب: استخدام formatNumber لإزالة الأصفار في حال الرقم صحيح
+                const dailyAvgRaw = (consumption / diffDays).toFixed(2);
+                const dailyAvg = formatNumber(dailyAvgRaw);
                 
                 let dayLabel = "";
                 if (diffDays === 1) {
