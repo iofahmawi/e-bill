@@ -115,7 +115,7 @@
             margin-bottom: 5px;
         }
         
-        .input-group input[type="number"] {
+        .input-group input[type="number"], .input-group input[type="text"] {
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
@@ -125,7 +125,7 @@
             transition: border-color 0.3s, box-shadow 0.3s; 
         }
         
-        .input-group input[type="number"]:focus {
+        .input-group input:focus {
             border-color: var(--focus-blue); 
             border-width: 2px; 
             outline: none; 
@@ -296,10 +296,9 @@
             padding: 0 5px;
         }
 
-        /* تنسيق الأرقام بخط عريض وحجم أصغر قليلاً ليتناسب مع النص */
         .daily-avg-container strong {
             font-weight: 700;
-            font-size: 0.83rem; /* تصغير درجة واحدة ليتناسب مع حجم النص */
+            font-size: 0.83rem; 
         }
         
         .simple-footer {
@@ -341,7 +340,7 @@
                 </div>
                 <div class="date-input-wrapper">
                     <label for="reading-day">تاريخ الفاتورة السابقة (إختياري)</label>
-                    <input type="number" id="reading-day">
+                    <input type="text" id="reading-day" inputmode="decimal">
                 </div>
             </div>
 
@@ -426,30 +425,42 @@
 
             let avgDivHtml = "";
             if (readingDayValue !== "") {
-                const day = parseInt(readingDayValue);
-                const now = new Date();
-                const start = new Date(now.getFullYear(), now.getMonth(), day);
-                if (day > now.getDate()) start.setMonth(start.getMonth() - 1);
-                const diffDays = Math.floor((now - start) / 86400000) || 1;
-                
-                const dailyAvgRaw = (consumption / diffDays).toFixed(2);
-                const dailyAvg = formatNumber(dailyAvgRaw);
-                
-                let dayLabel = "";
-                if (diffDays === 1) {
-                    dayLabel = "يوم واحد";
-                } else if (diffDays === 2) {
-                    dayLabel = "يومين";
-                } else if (diffDays >= 3 && diffDays <= 10) {
-                    dayLabel = `<strong>${diffDays}</strong> أيام`;
-                } else {
-                    dayLabel = `<strong>${diffDays}</strong> يوم`;
-                }
+                const dateParts = readingDayValue.split("-");
+                if (dateParts.length === 3) {
+                    const d = parseInt(dateParts[0]);
+                    const m = parseInt(dateParts[1]) - 1;
+                    const y = parseInt(dateParts[2]);
+                    
+                    const startDate = new Date(y, m, d);
+                    const now = new Date();
+                    
+                    startDate.setHours(0,0,0,0);
+                    now.setHours(0,0,0,0);
 
-                avgDivHtml = `
-                    <div class="daily-avg-container">
-                        معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> كيلوواط
-                    </div>`;
+                    const diffTime = now - startDate;
+                    let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays <= 0) diffDays = 1;
+                    
+                    const dailyAvgRaw = (consumption / diffDays).toFixed(2);
+                    const dailyAvg = formatNumber(dailyAvgRaw);
+                    
+                    let dayLabel = "";
+                    if (diffDays === 1) {
+                        dayLabel = "يوم واحد";
+                    } else if (diffDays === 2) {
+                        dayLabel = "يومين";
+                    } else if (diffDays >= 3 && diffDays <= 10) {
+                        dayLabel = `<strong>${diffDays}</strong> أيام`;
+                    } else {
+                        dayLabel = `<strong>${diffDays}</strong> يوم`;
+                    }
+
+                    avgDivHtml = `
+                        <div class="daily-avg-container">
+                            معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> كيلوواط
+                        </div>`;
+                }
             }
 
             let totalEnergyCost = 0.0;
