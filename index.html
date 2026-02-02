@@ -12,7 +12,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="icon.png">
     <style>
         :root {
             --primary-blue: #1976D2; 
@@ -51,16 +50,18 @@
             flex-direction: column;
         }
 
+        /* تعديل: تقليص المسافة العلوية من 40px إلى 15px */
         .header-blue {
             background-color: var(--primary-blue);
             color: var(--white);
-            padding: 30px 20px 100px;
+            padding: 30px 20px 100px; 
             text-align: center;
         }
 
         .header-blue h2 {
             font-size: 1.6rem;
             font-weight: 700; 
+            margin-top: 5px; /* تقليص الهامش العلوي للعنوان */
             margin-bottom: 10px;
         }
 
@@ -123,6 +124,11 @@
             font-size: 1.1rem;
             text-align: right; 
             transition: border-color 0.3s, box-shadow 0.3s; 
+        }
+
+        /* تعديل: التاريخ في المنتصف */
+        #reading-day {
+            text-align: center;
         }
         
         .input-group input:focus {
@@ -291,9 +297,10 @@
             text-align: right;
             color: var(--text-dark);
             font-size: 0.85rem;
-            margin-top: 1px; 
+            margin-top: -5px; 
             margin-bottom: 20px;
             padding: 0 5px;
+            line-height: 2; 
         }
 
         .daily-avg-container strong {
@@ -381,6 +388,28 @@
             return formatNumber(num.toFixed(3));
         }
         
+        function getFullCost(cons, subType) {
+            let energyCost = 0;
+            let remaining = cons;
+            let tariffs = subType === 'supported' ? [[300, 0.05], [600, 0.10], [Infinity, 0.20]] : [[1000, 0.12], [Infinity, 0.15]];
+            let acc = 0;
+            for (let i = 0; i < tariffs.length && remaining > 0; i++) {
+                const [limit, price] = tariffs[i];
+                const size = (limit === Infinity) ? Infinity : (limit - acc);
+                const used = Math.min(remaining, size);
+                energyCost += used * price;
+                remaining -= used;
+                acc += used;
+            }
+            let support = 0;
+            if (subType === 'supported') {
+                if (cons >= 51 && cons <= 200) support = 2.5;
+                else if (cons >= 201 && cons <= 600) support = 2.0;
+            }
+            const fixedFees = 3.0 + 1.0 + 0.20 + (cons / 1000);
+            return (energyCost + fixedFees) - support;
+        }
+
         function calculateAndSave() {
             const success = calculateElectricBill();
             if (success) {
@@ -411,9 +440,10 @@
             }
 
             const currentReading = parseFloat(currentReadingValue);
-            const previousReading = previousReadingValue === '' ? 0 : parseFloat(previousReadingValue);
+            const hasPrevious = (previousReadingValue !== '' && parseFloat(previousReadingValue) >= 0);
+            const previousReading = hasPrevious ? parseFloat(previousReadingValue) : 0;
 
-            if (currentReading < previousReading) {
+            if (hasPrevious && currentReading < previousReading) {
                 modalContentDiv.innerHTML = '<p class="error-message">القراءة الحالية لا يمكن أن تكون أقل من السابقة.</p>';
                 modal.style.display = 'flex';
                 return false;
@@ -424,41 +454,35 @@
             const subTypeText = subscriptionType === 'supported' ? 'مدعوم' : 'غير مدعوم';
 
             let avgDivHtml = "";
-            if (readingDayValue !== "") {
+            if (hasPrevious && readingDayValue !== "") {
                 const dateParts = readingDayValue.split("-");
                 if (dateParts.length === 3) {
                     const d = parseInt(dateParts[0]);
                     const m = parseInt(dateParts[1]) - 1;
                     const y = parseInt(dateParts[2]);
-                    
                     const startDate = new Date(y, m, d);
                     const now = new Date();
-                    
                     startDate.setHours(0,0,0,0);
                     now.setHours(0,0,0,0);
-
                     const diffTime = now - startDate;
                     let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                    
                     if (diffDays <= 0) diffDays = 1;
                     
                     const dailyAvgRaw = (consumption / diffDays).toFixed(2);
                     const dailyAvg = formatNumber(dailyAvgRaw);
                     
-                    let dayLabel = "";
-                    if (diffDays === 1) {
-                        dayLabel = "يوم واحد";
-                    } else if (diffDays === 2) {
-                        dayLabel = "يومين";
-                    } else if (diffDays >= 3 && diffDays <= 10) {
-                        dayLabel = `<strong>${diffDays}</strong> أيام`;
-                    } else {
-                        dayLabel = `<strong>${diffDays}</strong> يوم`;
+                    let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
+
+                    let predictionHtml = "";
+                    if (diffDays >= 10) {
+                        const predictedCons = Math.round(dailyAvgRaw * 30);
+                        const predictedBill = getFullCost(predictedCons, subscriptionType);
+                        predictionHtml = `<br>الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> كيلوواط هي <strong>${formatCurrency(predictedBill)}</strong> دينار`;
                     }
 
                     avgDivHtml = `
                         <div class="daily-avg-container">
-                            معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> كيلوواط
+                            معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> كيلوواط${predictionHtml}
                         </div>`;
                 }
             }
@@ -468,7 +492,6 @@
             let tableRowsHtml = '';
             let remaining = consumption;
             let tariffs = subscriptionType === 'supported' ? [[300, 0.05], [600, 0.10], [Infinity, 0.20]] : [[1000, 0.12], [Infinity, 0.15]];
-
             let accumulatedConsumption = 0; 
             for (let i = 0; i < tariffs.length && remaining > 0; i++) {
                 const [currentLimit, price] = tariffs[i];
@@ -485,12 +508,10 @@
                     tableRowsHtml += `<tr><td>${rangeLabel}</td><td>${formatNumber(usedInBlock)}</td><td>${formatCurrency(price)}</td><td>${formatCurrency(costInBlock)}</td></tr>`;
                 }
             }
-
             if (subscriptionType === 'supported') {
                 if (consumption >= 51 && consumption <= 200) governmentSupport = 2.5;
                 else if (consumption >= 201 && consumption <= 600) governmentSupport = 2.0;
             }
-
             const wasteFee = 3.0, tvFee = 1.0, meterFee = 0.20, ruralFilss = consumption / 1000; 
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
@@ -500,7 +521,7 @@
                 <div class="result-row" style="margin-top: 0; margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">تفاصيل استهلاك ${formatNumber(consumption)} كيلوواط:</span></div>
                 <div class="table-container" style="margin-bottom: 15px;">
                     <table>
-                        <thead><tr><th>الشريحة</th><th>الاستهلاك</th><th>التعرفة</th><th>الإجمالي</th></tr></thead>
+                        <thead><tr><th>الشريحة</th><th>استهلاك</th><th>التعرفة</th><th>الإجمالي</th></tr></thead>
                         <tbody>${tableRowsHtml}</tbody>
                     </table>
                 </div>
