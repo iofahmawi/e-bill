@@ -1,7 +1,7 @@
 // sw.js
 
 // 1. تغيير اسم الكاش وتحديث الإصدار
-const CACHE_NAME = 'e-bill-dynamic-v26';
+const CACHE_NAME = 'e-bill-dynamic-v27';
 
 // 2. نخزن فقط الملفات الأساسية جداً لضمان نجاح التثبيت
 const urlsToCache = [
