@@ -199,9 +199,9 @@
             overflow-y: auto;
         }
         
-        /* ضبط مسافات الحاوية الكلية للنتائج */
         #modal-results-content {
-            padding: 25px; /* مسافة موحدة من جميع الجهات */
+            /* 25px من الأعلى والأسفل للتساوي، و 20px من الجوانب لاتزان النص */
+            padding: 25px 20px; 
         }
 
         .result-row {
@@ -235,14 +235,14 @@
 
         .final-total-section {
             text-align: center;
-            margin: 0; /* إلغاء أي هوامش خارجية */
-            padding: 0; /* إلغاء أي padding */
+            margin: 0;
+            padding: 0;
         }
 
         .final-total-section p {
             font-size: 1.05rem;
             color: var(--text-dark);
-            margin: 0; /* تصفير الهامش لضمان الدقة */
+            margin: 0;
         }
 
         .final-total-section span {
@@ -251,7 +251,7 @@
             color: var(--secondary-green);
             display: block;
             margin-top: 5px;
-            line-height: 1; /* منع المسافات الزائدة تحت الخط */
+            line-height: 1;
         }
 
         .table-container {
@@ -294,7 +294,7 @@
             padding: 12px 15px;
             line-height: 1.8;
             border-radius: 12px;
-            margin-top: 0; /* تصفير المسافة العلوية للتأكد من توازنها مع الـ padding الكلي */
+            margin-top: 0;
             margin-bottom: 20px;
             box-sizing: border-box; 
             border: 1px solid transparent;
