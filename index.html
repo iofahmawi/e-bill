@@ -200,13 +200,7 @@
         }
         
         #modal-results-content {
-            padding: 20px;
-        }
-        
-        #modal-results-content h3 {
-            color: var(--secondary-green); 
-            margin-top: 0;
-            margin-bottom: 20px;
+            padding: 20px; /* موحدة الآن مع المسافة السفلية */
         }
 
         .result-row {
@@ -235,27 +229,27 @@
         .final-total-section {
             display: block;
             text-align: center;
-            padding-top: 10px;
-            padding-bottom: 10px; 
+            padding-top: 5px; /* مسافة بسيطة بعد الخط */
+            padding-bottom: 0; /* تم إزالة الفائض */
         }
         .final-total-section p {
             font-size: 1.05rem;
             color: var(--text-dark);
             margin: 0;
-            padding-bottom: 5px;
+            padding-bottom: 2px;
         }
         .final-total-section span {
             font-size: 1.6rem;
             font-weight: 700;
             color: var(--secondary-green);
             display: block;
-            margin-top: 10px; 
+            margin-top: 5px; 
         }
         
         hr {
             border: none;
             border-top: 1px solid #eee;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .table-container {
@@ -292,7 +286,6 @@
             font-size: 1.1rem;
         }
 
-        /* نظام إشارات المرور الهادئ */
         .daily-avg-container {
             text-align: right;
             font-size: 0.88rem;
@@ -304,27 +297,11 @@
             border: 1px solid transparent;
         }
 
-        .avg-safe {
-            background-color: #f1f8e9; 
-            color: #33691e;
-            border-color: #dcedc8;
-        }
+        .avg-safe { background-color: #f1f8e9; color: #33691e; border-color: #dcedc8; }
+        .avg-warning { background-color: #fff8e1; color: #bf360c; border-color: #ffecb3; }
+        .avg-danger { background-color: #fef2f2; color: #991b1b; border-color: #fee2e2; }
 
-        .avg-warning {
-            background-color: #fff8e1; 
-            color: #bf360c;
-            border-color: #ffecb3;
-        }
-
-        .avg-danger {
-            background-color: #fef2f2; 
-            color: #991b1b;
-            border-color: #fee2e2;
-        }
-
-        .daily-avg-container strong {
-            font-weight: 700;
-        }
+        .daily-avg-container strong { font-weight: 700; }
         
         .simple-footer {
             background-color: var(--text-light);
@@ -334,11 +311,7 @@
             padding: 20px 0 calc(20px + env(safe-area-inset-bottom, 0px));
         }
 
-        .simple-footer a {
-            color: var(--primary-blue);
-            font-weight: 500;
-            text-decoration: none;
-        }
+        .simple-footer a { color: var(--primary-blue); font-weight: 500; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -397,13 +370,8 @@
     </footer>
 
     <script>
-        function formatNumber(num) {
-            return parseFloat(num).toString();
-        }
-
-        function formatCurrency(num) {
-            return formatNumber(num.toFixed(3));
-        }
+        function formatNumber(num) { return parseFloat(num).toString(); }
+        function formatCurrency(num) { return formatNumber(num.toFixed(3)); }
         
         function getFullCost(cons, subType) {
             let energyCost = 0;
@@ -468,7 +436,6 @@
                 
             const consumption = currentReading - previousReading;
             const subscriptionType = subscriptionTypeInput.value;
-            const subTypeText = subscriptionType === 'supported' ? 'مدعوم' : 'غير مدعوم';
 
             let avgDivHtml = "";
             if (hasPrevious && readingDayValue !== "") {
@@ -487,7 +454,6 @@
                     
                     const dailyAvgRaw = (consumption / diffDays).toFixed(2);
                     const dailyAvg = formatNumber(dailyAvgRaw);
-                    
                     let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
 
                     let predictionHtml = "";
@@ -496,21 +462,15 @@
                     if (diffDays >= 10) {
                         const predictedCons = Math.round(dailyAvgRaw * 30);
                         const predictedBill = getFullCost(predictedCons, subscriptionType);
-                        
                         if (subscriptionType === 'supported') {
                             if (predictedCons > 600) trafficClass = "avg-danger";
                             else if (predictedCons > 300) trafficClass = "avg-warning";
                         } else {
                             if (predictedCons > 1000) trafficClass = "avg-danger";
                         }
-
                         predictionHtml = `<br>الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> ك.و هي <strong>${formatCurrency(predictedBill)}</strong> د.أ`;
                     }
-
-                    avgDivHtml = `
-                        <div class="daily-avg-container ${trafficClass}">
-                            معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> ك.و${predictionHtml}
-                        </div>`;
+                    avgDivHtml = `<div class="daily-avg-container ${trafficClass}">معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> ك.و${predictionHtml}</div>`;
                 }
             }
 
@@ -545,7 +505,6 @@
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
             modalContentDiv.innerHTML = `
-                <h3>تفاصيل الحساب (${subTypeText})</h3>
                 ${avgDivHtml}
                 <div class="result-row" style="margin-top: 0; margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">تفاصيل الاستهلاك الحالي ${formatNumber(consumption)} ك.و:</span></div>
                 <div class="table-container" style="margin-bottom: 15px;">
@@ -561,8 +520,8 @@
                 </div>
                 <div class="result-row" style="margin-top: 15px;"><span class="result-text-value"><span class="result-label">الإجمالي قبل الدعم:</span><span class="result-value">${formatCurrency(totalBillBeforeSupport)}</span></span></div>
                 <div class="result-row"><span class="result-text-value"><span class="result-label">قيمة الدعم الحكومي:</span><span class="result-value">${formatCurrency(governmentSupport)}</span></span></div>
-                <hr style="margin-top: 15px;">
-                <div class="final-total-section" style="padding-bottom: 0;"><p>المبلغ النهائي للفاتورة:</p><span>${formatCurrency(finalTotal)}</span></div>
+                <hr>
+                <div class="final-total-section"><p>المبلغ النهائي للفاتورة:</p><span>${formatCurrency(finalTotal)}</span></div>
             `;
             
             modal.style.display = 'flex';
@@ -582,9 +541,7 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker Registered'))
-                .catch(err => console.log('Registration Failed', err));
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err));
             });
         }
     </script>
