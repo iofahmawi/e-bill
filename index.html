@@ -50,7 +50,6 @@
             flex-direction: column;
         }
 
-        /* تعديل: تقليص المسافة العلوية من 40px إلى 15px */
         .header-blue {
             background-color: var(--primary-blue);
             color: var(--white);
@@ -61,7 +60,7 @@
         .header-blue h2 {
             font-size: 1.6rem;
             font-weight: 700; 
-            margin-top: 5px; /* تقليص الهامش العلوي للعنوان */
+            margin-top: 5px;
             margin-bottom: 10px;
         }
 
@@ -126,7 +125,6 @@
             transition: border-color 0.3s, box-shadow 0.3s; 
         }
 
-        /* تعديل: التاريخ في المنتصف */
         #reading-day {
             text-align: center;
         }
@@ -265,6 +263,7 @@
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 20px;
+            width: 100%;
         }
         
         table {
@@ -295,17 +294,20 @@
 
         .daily-avg-container {
             text-align: right;
-            color: var(--text-dark);
-            font-size: 0.85rem;
-            margin-top: -5px; 
+            color: #1565C0;
+            font-size: 0.88rem;
+            padding: 12px 15px;
+            line-height: 1.8;
+            background-color: #E3F2FD;
+            border: 1px solid #BBDEFB;
+            border-radius: 12px;
             margin-bottom: 20px;
-            padding: 0 5px;
-            line-height: 2; 
+            box-sizing: border-box; 
         }
 
         .daily-avg-container strong {
             font-weight: 700;
-            font-size: 0.83rem; 
+            color: #0D47A1;
         }
         
         .simple-footer {
@@ -321,7 +323,6 @@
             font-weight: 500;
             text-decoration: none;
         }
-
     </style>
 </head>
 <body>
@@ -477,18 +478,17 @@
                     if (diffDays >= 10) {
                         const predictedCons = Math.round(dailyAvgRaw * 30);
                         const predictedBill = getFullCost(predictedCons, subscriptionType);
-                        predictionHtml = `<br>الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> كيلوواط هي <strong>${formatCurrency(predictedBill)}</strong> دينار`;
+                        predictionHtml = `<br>الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> ك.و هي <strong>${formatCurrency(predictedBill)}</strong> د.أ`;
                     }
 
                     avgDivHtml = `
                         <div class="daily-avg-container">
-                            معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> كيلوواط${predictionHtml}
+                            معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> ك.و${predictionHtml}
                         </div>`;
                 }
             }
 
             let totalEnergyCost = 0.0;
-            let governmentSupport = 0.0;
             let tableRowsHtml = '';
             let remaining = consumption;
             let tariffs = subscriptionType === 'supported' ? [[300, 0.05], [600, 0.10], [Infinity, 0.20]] : [[1000, 0.12], [Infinity, 0.15]];
@@ -508,6 +508,8 @@
                     tableRowsHtml += `<tr><td>${rangeLabel}</td><td>${formatNumber(usedInBlock)}</td><td>${formatCurrency(price)}</td><td>${formatCurrency(costInBlock)}</td></tr>`;
                 }
             }
+
+            let governmentSupport = 0.0;
             if (subscriptionType === 'supported') {
                 if (consumption >= 51 && consumption <= 200) governmentSupport = 2.5;
                 else if (consumption >= 201 && consumption <= 600) governmentSupport = 2.0;
@@ -518,14 +520,14 @@
 
             modalContentDiv.innerHTML = `
                 <h3>تفاصيل الحساب (${subTypeText})</h3>
-                <div class="result-row" style="margin-top: 0; margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">تفاصيل استهلاك ${formatNumber(consumption)} كيلوواط:</span></div>
+                ${avgDivHtml}
+                <div class="result-row" style="margin-top: 0; margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">تفاصيل الاستهلاك الحالي ${formatNumber(consumption)} ك.و:</span></div>
                 <div class="table-container" style="margin-bottom: 15px;">
                     <table>
                         <thead><tr><th>الشريحة</th><th>استهلاك</th><th>التعرفة</th><th>الإجمالي</th></tr></thead>
                         <tbody>${tableRowsHtml}</tbody>
                     </table>
                 </div>
-                ${avgDivHtml}
                 <div class="result-row" style="margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">رسوم إضافية:</span></div>
                 <div class="table-container" style="margin-bottom: 0;">
                     <table><thead><tr><th>تلفزيون</th><th>نفايات</th><th>عداد</th><th>فلس الريف</th></tr></thead>
@@ -560,6 +562,5 @@
             });
         }
     </script>
-
 </body>
 </html>
