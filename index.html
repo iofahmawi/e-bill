@@ -21,6 +21,7 @@
             --text-dark: #333;
             --text-light: #f5f5f5;
             --error-red: #D93025;
+            --warning-orange: #FB8C00;
             --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -292,22 +293,38 @@
             font-size: 1.1rem;
         }
 
+        /* تنسيقات إشارات المرور */
         .daily-avg-container {
             text-align: right;
-            color: #1565C0;
             font-size: 0.88rem;
             padding: 12px 15px;
             line-height: 1.8;
-            background-color: #E3F2FD;
-            border: 1px solid #BBDEFB;
             border-radius: 12px;
             margin-bottom: 20px;
             box-sizing: border-box; 
+            border: 1px solid transparent;
+        }
+
+        .avg-safe {
+            background-color: #E8F5E9; /* أخضر فاتح */
+            color: #2E7D32;
+            border-color: #C8E6C9;
+        }
+
+        .avg-warning {
+            background-color: #FFF3E0; /* برتقالي فاتح */
+            color: #E65100;
+            border-color: #FFE0B2;
+        }
+
+        .avg-danger {
+            background-color: #FFEBEE; /* أحمر فاتح */
+            color: #C62828;
+            border-color: #FFCDD2;
         }
 
         .daily-avg-container strong {
             font-weight: 700;
-            color: #0D47A1;
         }
         
         .simple-footer {
@@ -475,14 +492,26 @@
                     let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
 
                     let predictionHtml = "";
+                    let trafficClass = "avg-safe"; // الافتراضي أخضر
+
                     if (diffDays >= 10) {
                         const predictedCons = Math.round(dailyAvgRaw * 30);
                         const predictedBill = getFullCost(predictedCons, subscriptionType);
+                        
+                        // تطبيق منطق إشارات المرور بناءً على التوقع
+                        if (subscriptionType === 'supported') {
+                            if (predictedCons > 600) trafficClass = "avg-danger";
+                            else if (predictedCons > 300) trafficClass = "avg-warning";
+                        } else {
+                            // لغير المدعوم، نضع عتبة عند 1000 ك.و
+                            if (predictedCons > 1000) trafficClass = "avg-danger";
+                        }
+
                         predictionHtml = `<br>الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> ك.و هي <strong>${formatCurrency(predictedBill)}</strong> د.أ`;
                     }
 
                     avgDivHtml = `
-                        <div class="daily-avg-container">
+                        <div class="daily-avg-container ${trafficClass}">
                             معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> ك.و${predictionHtml}
                         </div>`;
                 }
