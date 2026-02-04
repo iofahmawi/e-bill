@@ -126,7 +126,7 @@
             border: 1px solid #ccc;
             border-radius: 12px;
             font-size: 1.1rem;
-            text-align: center; /* تم توحيد المحاذاة للمنتصف هنا لجميع الحقول */
+            text-align: center; 
             transition: border-color 0.3s, box-shadow 0.3s; 
         }
 
@@ -331,21 +331,21 @@
                 <div class="readings-container">
                     <div class="reading-input">
                         <label for="previous-reading">السابقة</label>
-                        <input type="number" id="previous-reading">
+                        <input type="number" id="previous-reading" class="hide-kb-on-enter">
                     </div>
                     <div class="reading-input">
                         <label for="current-reading">الحالية</label>
-                        <input type="number" id="current-reading">
+                        <input type="number" id="current-reading" class="hide-kb-on-enter">
                     </div>
                 </div>
                 <div class="extra-inputs">
                     <div class="date-input-wrapper">
                         <label for="reading-day">تاريخ الفاتورة السابقة</label>
-                        <input type="text" id="reading-day" inputmode="decimal">
+                        <input type="text" id="reading-day" inputmode="decimal" class="hide-kb-on-enter">
                     </div>
                     <div class="waste-input-wrapper">
                         <label for="waste-fee">رسوم النفايات</label>
-                        <input type="number" id="waste-fee" value="3">
+                        <input type="number" id="waste-fee" value="3" class="hide-kb-on-enter">
                     </div>
                 </div>
             </div>
@@ -379,6 +379,15 @@
     </footer>
 
     <script>
+        // دالة إغلاق الكيبورد عند ضغط Enter في الهاتف
+        document.querySelectorAll('.hide-kb-on-enter').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    this.blur();
+                }
+            });
+        });
+
         function formatNumber(num) { return parseFloat(num).toString(); }
         function formatCurrency(num) { return formatNumber(num.toFixed(3)); }
         
@@ -405,6 +414,8 @@
         }
 
         function calculateAndSave() {
+            if (document.activeElement) document.activeElement.blur();
+
             const success = calculateElectricBill();
             if (success) {
                 localStorage.setItem('calculator_currentReading', document.getElementById('current-reading').value);
