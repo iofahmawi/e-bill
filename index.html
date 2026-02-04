@@ -104,11 +104,16 @@
             flex: 1;
         }
 
-        .date-input-wrapper {
-            width: 100%;
+        .extra-inputs {
+            display: flex;
+            gap: 15px;
         }
 
-        .reading-input label, .date-input-wrapper label {
+        .date-input-wrapper, .waste-input-wrapper {
+            flex: 1;
+        }
+
+        .reading-input label, .date-input-wrapper label, .waste-input-wrapper label {
             display: block;
             font-size: 0.85rem;
             color: #666;
@@ -121,14 +126,10 @@
             border: 1px solid #ccc;
             border-radius: 12px;
             font-size: 1.1rem;
-            text-align: right; 
+            text-align: center; /* تم توحيد المحاذاة للمنتصف هنا لجميع الحقول */
             transition: border-color 0.3s, box-shadow 0.3s; 
         }
 
-        #reading-day {
-            text-align: center;
-        }
-        
         .input-group input:focus {
             border-color: var(--focus-blue); 
             border-width: 2px; 
@@ -208,7 +209,7 @@
             justify-content: space-between; 
             align-items: flex-end; 
             margin: 10px 0;
-            font-size: 1rem; /* تم توحيد الحجم لجميع الصفوف لتحقيق التوازن */
+            font-size: 1rem; 
         }
         
         .result-text-value {
@@ -337,9 +338,15 @@
                         <input type="number" id="current-reading">
                     </div>
                 </div>
-                <div class="date-input-wrapper">
-                    <label for="reading-day">تاريخ الفاتورة السابقة (إختياري)</label>
-                    <input type="text" id="reading-day" inputmode="decimal">
+                <div class="extra-inputs">
+                    <div class="date-input-wrapper">
+                        <label for="reading-day">تاريخ الفاتورة السابقة</label>
+                        <input type="text" id="reading-day" inputmode="decimal">
+                    </div>
+                    <div class="waste-input-wrapper">
+                        <label for="waste-fee">رسوم النفايات</label>
+                        <input type="number" id="waste-fee" value="3">
+                    </div>
                 </div>
             </div>
 
@@ -375,7 +382,7 @@
         function formatNumber(num) { return parseFloat(num).toString(); }
         function formatCurrency(num) { return formatNumber(num.toFixed(3)); }
         
-        function getFullCost(cons, subType) {
+        function getFullCost(cons, subType, waste) {
             let energyCost = 0;
             let remaining = cons;
             let tariffs = subType === 'supported' ? [[300, 0.05], [600, 0.10], [Infinity, 0.20]] : [[1000, 0.12], [Infinity, 0.15]];
@@ -393,7 +400,7 @@
                 if (cons >= 51 && cons <= 200) support = 2.5;
                 else if (cons >= 201 && cons <= 600) support = 2.0;
             }
-            const fixedFees = 3.0 + 1.0 + 0.20 + (cons / 1000);
+            const fixedFees = waste + 1.0 + 0.20 + (cons / 1000);
             return (energyCost + fixedFees) - support;
         }
 
@@ -403,6 +410,7 @@
                 localStorage.setItem('calculator_currentReading', document.getElementById('current-reading').value);
                 localStorage.setItem('calculator_previousReading', document.getElementById('previous-reading').value);
                 localStorage.setItem('calculator_day', document.getElementById('reading-day').value);
+                localStorage.setItem('calculator_waste', document.getElementById('waste-fee').value);
                 localStorage.setItem('calculator_subscriptionType', document.querySelector('input[name="subscription-type"]:checked').value);
             }
         }
@@ -411,6 +419,7 @@
             const currentReadingInput = document.getElementById('current-reading');
             const previousReadingInput = document.getElementById('previous-reading');
             const readingDayInput = document.getElementById('reading-day');
+            const wasteInput = document.getElementById('waste-fee');
             const subscriptionTypeInput = document.querySelector('input[name="subscription-type"]:checked');
             
             const modal = document.getElementById('result-modal');
@@ -419,6 +428,7 @@
             const currentReadingValue = currentReadingInput.value.trim();
             const previousReadingValue = previousReadingInput.value.trim();
             const readingDayValue = readingDayInput.value.trim();
+            const wasteFeeValue = wasteInput.value.trim() === "" ? 3 : parseFloat(wasteInput.value);
 
             if (currentReadingValue === '') {
                 modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال القراءة الحالية على الأقل.</p>';
@@ -463,7 +473,7 @@
 
                     if (diffDays >= 10) {
                         const predictedCons = Math.round(dailyAvgRaw * 30);
-                        const predictedBill = getFullCost(predictedCons, subscriptionType);
+                        const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue);
                         if (subscriptionType === 'supported') {
                             if (predictedCons > 600) trafficClass = "avg-danger";
                             else if (predictedCons > 300) trafficClass = "avg-warning";
@@ -502,7 +512,7 @@
                 if (consumption >= 51 && consumption <= 200) governmentSupport = 2.5;
                 else if (consumption >= 201 && consumption <= 600) governmentSupport = 2.0;
             }
-            const wasteFee = 3.0, tvFee = 1.0, meterFee = 0.20, ruralFilss = consumption / 1000; 
+            const wasteFee = wasteFeeValue, tvFee = 1.0, meterFee = 0.20, ruralFilss = consumption / 1000; 
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
@@ -536,6 +546,7 @@
                 document.getElementById('current-reading').value = localStorage.getItem('calculator_currentReading');
                 document.getElementById('previous-reading').value = localStorage.getItem('calculator_previousReading');
                 document.getElementById('reading-day').value = localStorage.getItem('calculator_day') || '';
+                document.getElementById('waste-fee').value = localStorage.getItem('calculator_waste') || '3';
                 const savedSub = localStorage.getItem('calculator_subscriptionType');
                 if (savedSub) document.getElementById(`sub-${savedSub}`).checked = true;
             }
