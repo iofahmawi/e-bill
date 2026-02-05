@@ -111,7 +111,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* تنسيقات المودال الأصلية (النتائج) */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
         .modal-content { background-color: var(--white); border-radius: 14px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 100%; max-width: 450px; position: relative; max-height: 90vh; overflow-y: auto; }
         #modal-results-content { padding: 25px 20px; }
@@ -132,7 +131,6 @@
         .avg-warning { background-color: #fff8e1; color: #bf360c; border-color: #ffecb3; }
         .avg-danger { background-color: #fef2f2; color: #991b1b; border-color: #fee2e2; }
 
-        /* تعديل التوقيع ليكون منخفضاً بمقدار نصف سم (40px بدلاً من 20px) */
         .simple-footer { 
             background-color: var(--text-light); 
             text-align: center; 
@@ -351,7 +349,14 @@
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
+            // تحديث المصطلح هنا ليكون "اشتراك مدعوم"
+            const resultTitle = subscriptionType === 'supported' ? 'اشتراك مدعوم' : 'اشتراك غير مدعوم';
+            const titleColor = subscriptionType === 'supported' ? 'var(--secondary-green)' : 'var(--error-red)';
+
             modalContentDiv.innerHTML = `
+                <div style="width: 100%; text-align: center; margin-bottom: 15px; display: block;">
+                    <h2 style="color: ${titleColor}; margin: 0 auto; font-size: 1.2rem; font-weight: 700; width: fit-content; display: inline-block;">${resultTitle}</h2>
+                </div>
                 ${avgDivHtml}
                 <div class="result-row" style="margin-top: 0; margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">كلفة الاستهلاك الحالي ${formatNumber(consumption)} كيلوواط:</span></div>
                 <div class="table-container" style="margin-bottom: 15px;">
@@ -366,7 +371,7 @@
                 <div class="result-row" style="margin-top: 15px;"><span class="result-text-value"><span class="result-label">الإجمالي قبل الدعم:</span><span class="result-value">${formatCurrency(totalBillBeforeSupport)}</span></span></div>
                 <div class="result-row"><span class="result-text-value"><span class="result-label">قيمة الدعم الحكومي:</span><span class="result-value">${formatCurrency(governmentSupport)}</span></span></div>
                 <hr>
-                <div class="final-total-section"><p>المبلغ النهائي للفاتورة:</p><span>${formatCurrency(finalTotal)}</span></div>
+                <div class="final-total-section"><p>المبلغ النهائي:</p><span>${formatCurrency(finalTotal)}</span></div>
             `;
             
             modal.style.display = 'flex';
@@ -388,9 +393,7 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker Registered'))
-                    .catch(err => console.log('Service Worker Registration Failed', err));
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err));
             });
         }
     </script>
