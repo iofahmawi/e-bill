@@ -349,7 +349,6 @@
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
-            // تحديث المصطلح هنا ليكون "اشتراك مدعوم"
             const resultTitle = subscriptionType === 'supported' ? 'اشتراك مدعوم' : 'اشتراك غير مدعوم';
             const titleColor = subscriptionType === 'supported' ? 'var(--secondary-green)' : 'var(--error-red)';
 
@@ -371,7 +370,7 @@
                 <div class="result-row" style="margin-top: 15px;"><span class="result-text-value"><span class="result-label">الإجمالي قبل الدعم:</span><span class="result-value">${formatCurrency(totalBillBeforeSupport)}</span></span></div>
                 <div class="result-row"><span class="result-text-value"><span class="result-label">قيمة الدعم الحكومي:</span><span class="result-value">${formatCurrency(governmentSupport)}</span></span></div>
                 <hr>
-                <div class="final-total-section"><p>المبلغ النهائي:</p><span>${formatCurrency(finalTotal)}</span></div>
+                <div class="final-total-section"><p>المبلغ النهائي المطلوب:</p><span>${formatCurrency(finalTotal)}</span></div>
             `;
             
             modal.style.display = 'flex';
