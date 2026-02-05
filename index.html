@@ -24,20 +24,9 @@
             --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        * {
-            box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
-            /* إلغاء الوميض الأزرق عند الضغط في الجوال */
-            -webkit-tap-highlight-color: transparent;
-            outline: none;
-        }
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
         
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden; 
-        }
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 
         body {
             background-color: var(--text-light);
@@ -47,11 +36,7 @@
             flex-direction: column;
         }
         
-        .content-wrapper {
-            flex-grow: 1; 
-            display: flex;
-            flex-direction: column;
-        }
+        .content-wrapper { flex-grow: 1; display: flex; flex-direction: column; }
 
         .header-blue {
             background-color: var(--primary-blue);
@@ -60,19 +45,8 @@
             text-align: center;
         }
 
-        .header-blue h2 {
-            font-size: 1.6rem;
-            font-weight: 700; 
-            margin-top: 5px;
-            margin-bottom: 10px;
-        }
-
-        .header-blue p {
-            font-size: 1rem;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 0;
-        }
+        .header-blue h2 { font-size: 1.6rem; font-weight: 700; margin-top: 5px; margin-bottom: 10px; }
+        .header-blue p { font-size: 1rem; font-weight: 400; color: rgba(255, 255, 255, 0.8); margin: 0; }
         
         .card {
             background-color: var(--white);
@@ -86,46 +60,24 @@
             z-index: 10;
         }
         
-        .input-group {
-            margin-bottom: 25px;
-        }
+        .input-group { margin-bottom: 25px; }
+        .input-group > label { display: block; color: var(--text-dark); margin-bottom: 8px; font-weight: 500; }
 
-        .input-group > label {
-            display: block;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
+        .readings-container { display: flex; gap: 15px; margin-bottom: 15px; }
+        .reading-input { flex: 1; }
 
-        .readings-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
+        .extra-inputs { display: flex; gap: 15px; margin-bottom: 15px; }
+        .waste-input-wrapper, .phase-input-wrapper { flex: 1; }
 
-        .reading-input {
-            flex: 1;
-        }
+        .date-full-row { width: 100%; }
 
-        .extra-inputs {
-            display: flex;
-            gap: 15px;
-        }
-
-        .date-input-wrapper, .waste-input-wrapper {
-            flex: 1;
-        }
-
-        .reading-input label, .date-input-wrapper label, .waste-input-wrapper label {
-            display: block;
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 5px;
+        .reading-input label, .date-full-row label, .waste-input-wrapper label, .phase-input-wrapper label {
+            display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px;
         }
         
         .input-group input[type="number"], .input-group input[type="text"] {
             width: 100%;
-            padding: 12px;
+            padding: 8px;
             border: 1px solid #ccc;
             border-radius: 12px;
             font-size: 1.1rem;
@@ -136,188 +88,58 @@
         .input-group input:focus {
             border-color: var(--focus-blue); 
             border-width: 2px; 
+            outline: none; 
             box-shadow: 0 0 0 1px var(--focus-blue); 
         }
 
-        .radio-group {
-            margin-bottom: 25px;
-        }
-
-        .radio-group > label {
-            font-weight: 500;
-            margin-bottom: 10px;
-            display: block;
-            color: var(--text-dark);
-        }
-
-        .radio-options {
-            display: flex;
-            gap: 25px;
-            margin-top: 10px;
-        }
-
-        .radio-option input[type="radio"] {
-            margin-left: 8px;
-            cursor: pointer;
-        }
+        .radio-group { margin-bottom: 25px; }
+        .radio-group > label { font-weight: 500; margin-bottom: 10px; display: block; color: var(--text-dark); }
+        .radio-options { display: flex; gap: 25px; margin-top: 10px; }
+        .radio-option input[type="radio"] { margin-left: 8px; }
         
         button {
             width: 100%;
             background-color: var(--primary-blue);
             color: var(--white);
             border: none;
-            padding: 10px 20px;
+            padding: 8px 20px;
             border-radius: 14px;
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: background-color 0.3s;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        button:active {
-            background-color: #1565C0;
-            transform: scale(0.98); /* تأثير ضغطة بسيط بدلاً من الوميض */
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background-color: var(--white);
-            border-radius: 14px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 450px;
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        #modal-results-content {
-            padding: 25px 20px; 
-        }
-
-        .result-row {
-            display: flex;
-            justify-content: space-between; 
-            align-items: flex-end; 
-            margin: 10px 0;
-            font-size: 1rem; 
-        }
-        
-        .result-text-value {
-            display: inline-flex;
-            gap: 15px; 
-            align-items: baseline;
-        }
-        
-        .result-label {
-            color: var(--text-dark);
-        }
-        
-        .result-value {
-            color: var(--text-dark);
-            font-weight: 700;
-        }
-        
-        hr {
-            border: none;
-            border-top: 1px solid #eee;
-            margin: 20px 0; 
-        }
-
-        .final-total-section {
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-
-        .final-total-section p {
-            font-size: 1.05rem;
-            color: var(--text-dark);
-            margin: 0;
-        }
-
-        .final-total-section span {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--secondary-green);
-            display: block;
-            margin-top: 5px;
-            line-height: 1;
-        }
-
-        .table-container {
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            border-bottom: 1px solid #eee;
-            padding: 10px 8px;
-            text-align: center;
-        }
-        
-        th {
-            background-color: #f0f8ff;
-            color: var(--primary-blue);
-            font-weight: 500;
-        }
-        
-        .error-message {
-            color: var(--error-red);
-            font-weight: 500;
-            text-align: center;
-            margin: 10px 0;
-            font-size: 1.1rem;
-        }
-
-        .daily-avg-container {
-            text-align: right;
-            font-size: 0.88rem;
-            padding: 12px 15px;
-            line-height: 1.8;
-            border-radius: 12px;
-            margin-top: 0;
-            margin-bottom: 20px;
-            box-sizing: border-box; 
-            border: 1px solid transparent;
-        }
-
+        /* تنسيقات المودال الأصلية (النتائج) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-content { background-color: var(--white); border-radius: 14px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 100%; max-width: 450px; position: relative; max-height: 90vh; overflow-y: auto; }
+        #modal-results-content { padding: 25px 20px; }
+        .result-row { display: flex; justify-content: space-between; align-items: flex-end; margin: 10px 0; font-size: 1rem; }
+        .result-text-value { display: inline-flex; gap: 15px; align-items: baseline; }
+        .result-label { color: var(--text-dark); }
+        .result-value { color: var(--text-dark); font-weight: 700; }
+        hr { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+        .final-total-section { text-align: center; margin: 0; padding: 0; }
+        .final-total-section p { font-size: 1.05rem; color: var(--text-dark); margin: 0; }
+        .final-total-section span { font-size: 1.6rem; font-weight: 700; color: var(--secondary-green); display: block; margin-top: 5px; line-height: 1; }
+        .table-container { border: 1px solid #ddd; border-radius: 12px; overflow: hidden; margin-bottom: 20px; width: 100%; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { border-bottom: 1px solid #eee; padding: 10px 8px; text-align: center; }
+        th { background-color: #f0f8ff; color: var(--primary-blue); font-weight: 500; }
+        .daily-avg-container { text-align: right; font-size: 0.88rem; padding: 12px 15px; line-height: 1.8; border-radius: 12px; margin-top: 0; margin-bottom: 20px; box-sizing: border-box; border: 1px solid transparent; }
         .avg-safe { background-color: #f1f8e9; color: #33691e; border-color: #dcedc8; }
         .avg-warning { background-color: #fff8e1; color: #bf360c; border-color: #ffecb3; }
         .avg-danger { background-color: #fef2f2; color: #991b1b; border-color: #fee2e2; }
 
-        .daily-avg-container strong { font-weight: 700; }
-        
-        .simple-footer {
-            background-color: var(--text-light);
-            text-align: center;
-            color: #888;
-            font-size: 0.9rem;
-            padding: 20px 0 calc(20px + env(safe-area-inset-bottom, 0px));
+        /* تعديل التوقيع ليكون منخفضاً بمقدار نصف سم (40px بدلاً من 20px) */
+        .simple-footer { 
+            background-color: var(--text-light); 
+            text-align: center; 
+            color: #888; 
+            font-size: 0.9rem; 
+            padding: 45px 0 calc(20px + env(safe-area-inset-bottom, 0px)); 
         }
-
         .simple-footer a { color: var(--primary-blue); font-weight: 500; text-decoration: none; }
     </style>
 </head>
@@ -342,15 +164,21 @@
                         <input type="number" id="current-reading" class="hide-kb-on-enter">
                     </div>
                 </div>
+                
                 <div class="extra-inputs">
-                    <div class="date-input-wrapper">
-                        <label for="reading-day">تاريخ الفاتورة السابقة</label>
-                        <input type="text" id="reading-day" inputmode="decimal" class="hide-kb-on-enter">
+                    <div class="phase-input-wrapper">
+                        <label for="meter-phase">نوع العداد (فاز)</label>
+                        <input type="number" id="meter-phase" value="1" class="hide-kb-on-enter">
                     </div>
                     <div class="waste-input-wrapper">
                         <label for="waste-fee">رسوم النفايات</label>
                         <input type="number" id="waste-fee" value="3" class="hide-kb-on-enter">
                     </div>
+                </div>
+
+                <div class="date-full-row">
+                    <label for="reading-day">تاريخ الفاتورة السابقة</label>
+                    <input type="text" id="reading-day" inputmode="decimal" class="hide-kb-on-enter">
                 </div>
             </div>
 
@@ -383,19 +211,14 @@
     </footer>
 
     <script>
-        // إغلاق الكيبورد عند ضغط Enter في الهاتف
         document.querySelectorAll('.hide-kb-on-enter').forEach(input => {
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    this.blur();
-                }
-            });
+            input.addEventListener('keypress', function(e) { if (e.key === 'Enter') { this.blur(); } });
         });
 
         function formatNumber(num) { return parseFloat(num).toString(); }
         function formatCurrency(num) { return formatNumber(num.toFixed(3)); }
         
-        function getFullCost(cons, subType, waste) {
+        function getFullCost(cons, subType, waste, phase) {
             let energyCost = 0;
             let remaining = cons;
             let tariffs = subType === 'supported' ? [[300, 0.05], [600, 0.10], [Infinity, 0.20]] : [[1000, 0.12], [Infinity, 0.15]];
@@ -413,19 +236,20 @@
                 if (cons >= 51 && cons <= 200) support = 2.5;
                 else if (cons >= 201 && cons <= 600) support = 2.0;
             }
-            const fixedFees = waste + 1.0 + 0.20 + (cons / 1000);
+            let meterFee = (phase == 3) ? 0.50 : 0.20;
+            const fixedFees = waste + 1.0 + meterFee + (cons / 1000);
             return (energyCost + fixedFees) - support;
         }
 
         function calculateAndSave() {
             if (document.activeElement) document.activeElement.blur();
-
             const success = calculateElectricBill();
             if (success) {
                 localStorage.setItem('calculator_currentReading', document.getElementById('current-reading').value);
                 localStorage.setItem('calculator_previousReading', document.getElementById('previous-reading').value);
                 localStorage.setItem('calculator_day', document.getElementById('reading-day').value);
                 localStorage.setItem('calculator_waste', document.getElementById('waste-fee').value);
+                localStorage.setItem('calculator_phase', document.getElementById('meter-phase').value);
                 localStorage.setItem('calculator_subscriptionType', document.querySelector('input[name="subscription-type"]:checked').value);
             }
         }
@@ -435,6 +259,7 @@
             const previousReadingInput = document.getElementById('previous-reading');
             const readingDayInput = document.getElementById('reading-day');
             const wasteInput = document.getElementById('waste-fee');
+            const phaseInput = document.getElementById('meter-phase');
             const subscriptionTypeInput = document.querySelector('input[name="subscription-type"]:checked');
             
             const modal = document.getElementById('result-modal');
@@ -444,6 +269,7 @@
             const previousReadingValue = previousReadingInput.value.trim();
             const readingDayValue = readingDayInput.value.trim();
             const wasteFeeValue = wasteInput.value.trim() === "" ? 3 : parseFloat(wasteInput.value);
+            const phaseValue = phaseInput.value.trim() === "" ? 1 : parseInt(phaseInput.value);
 
             if (currentReadingValue === '') {
                 modalContentDiv.innerHTML = '<p class="error-message">الرجاء إدخال القراءة الحالية على الأقل.</p>';
@@ -473,28 +299,22 @@
                     const y = parseInt(dateParts[2]);
                     const startDate = new Date(y, m, d);
                     const now = new Date();
-                    startDate.setHours(0,0,0,0);
-                    now.setHours(0,0,0,0);
+                    startDate.setHours(0,0,0,0); now.setHours(0,0,0,0);
                     const diffTime = now - startDate;
                     let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
                     if (diffDays <= 0) diffDays = 1;
-                    
                     const dailyAvgRaw = (consumption / diffDays).toFixed(2);
                     const dailyAvg = formatNumber(dailyAvgRaw);
                     let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
-
                     let predictionHtml = "";
                     let trafficClass = "avg-safe";
-
                     if (diffDays >= 10) {
                         const predictedCons = Math.round(dailyAvgRaw * 30);
-                        const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue);
+                        const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue, phaseValue);
                         if (subscriptionType === 'supported') {
                             if (predictedCons > 600) trafficClass = "avg-danger";
                             else if (predictedCons > 300) trafficClass = "avg-warning";
-                        } else {
-                            if (predictedCons > 1000) trafficClass = "avg-danger";
-                        }
+                        } else { if (predictedCons > 1000) trafficClass = "avg-danger"; }
                         predictionHtml = `<br>الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> ك.و هي <strong>${formatCurrency(predictedBill)}</strong> د.أ`;
                     }
                     avgDivHtml = `<div class="daily-avg-container ${trafficClass}">معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> ك.و${predictionHtml}</div>`;
@@ -527,7 +347,7 @@
                 if (consumption >= 51 && consumption <= 200) governmentSupport = 2.5;
                 else if (consumption >= 201 && consumption <= 600) governmentSupport = 2.0;
             }
-            const wasteFee = wasteFeeValue, tvFee = 1.0, meterFee = 0.20, ruralFilss = consumption / 1000; 
+            const wasteFee = wasteFeeValue, tvFee = 1.0, meterFee = (phaseValue == 3 ? 0.50 : 0.20), ruralFilss = consumption / 1000; 
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
@@ -535,10 +355,8 @@
                 ${avgDivHtml}
                 <div class="result-row" style="margin-top: 0; margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">كلفة الاستهلاك الحالي ${formatNumber(consumption)} كيلوواط:</span></div>
                 <div class="table-container" style="margin-bottom: 15px;">
-                    <table>
-                        <thead><tr><th>الشريحة</th><th>استهلاك</th><th>التعرفة</th><th>الإجمالي</th></tr></thead>
-                        <tbody>${tableRowsHtml}</tbody>
-                    </table>
+                    <table><thead><tr><th>الشريحة</th><th>استهلاك</th><th>التعرفة</th><th>الإجمالي</th></tr></thead>
+                    <tbody>${tableRowsHtml}</tbody></table>
                 </div>
                 <div class="result-row" style="margin-bottom: 5px;"><span class="result-label" style="font-weight: bold;">رسوم إضافية:</span></div>
                 <div class="table-container" style="margin-bottom: 0;">
@@ -562,6 +380,7 @@
                 document.getElementById('previous-reading').value = localStorage.getItem('calculator_previousReading');
                 document.getElementById('reading-day').value = localStorage.getItem('calculator_day') || '';
                 document.getElementById('waste-fee').value = localStorage.getItem('calculator_waste') || '3';
+                document.getElementById('meter-phase').value = localStorage.getItem('calculator_phase') || '1';
                 const savedSub = localStorage.getItem('calculator_subscriptionType');
                 if (savedSub) document.getElementById(`sub-${savedSub}`).checked = true;
             }
@@ -569,7 +388,9 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err));
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker Registered'))
+                    .catch(err => console.log('Service Worker Registration Failed', err));
             });
         }
     </script>
