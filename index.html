@@ -75,17 +75,16 @@
             display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px;
         }
         
-        /* تعديل: جعل الأرقام المدخلة بخط عريض لسهولة القراءة */
+        /* إعادة المدخلات للخط العادي */
         .input-group input[type="number"], .input-group input[type="text"] {
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 12px;
             font-size: 1.1rem;
-            font-weight: 700; /* خط عريض */
+            font-weight: 400; 
             text-align: center; 
             transition: border-color 0.3s, box-shadow 0.3s; 
-            color: var(--text-dark);
         }
 
         .input-group input:focus {
@@ -100,6 +99,7 @@
         .radio-options { display: flex; gap: 25px; margin-top: 10px; }
         .radio-option input[type="radio"] { margin-left: 8px; }
         
+        /* تعديل: جعل خط الزر سميكاً فقط */
         button {
             width: 100%;
             background-color: var(--primary-blue);
@@ -108,7 +108,7 @@
             padding: 8px 20px;
             border-radius: 14px;
             font-size: 1rem;
-            font-weight: 700; /* جعل نص الزر عريضاً أيضاً */
+            font-weight: 700; 
             cursor: pointer;
             transition: background-color 0.3s;
             -webkit-tap-highlight-color: transparent;
@@ -129,8 +129,8 @@
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th, td { border-bottom: 1px solid #eee; padding: 10px 8px; text-align: center; }
         
-        /* رؤوس الجدول بخط عريض بناءً على طلبك السابق */
-        th { background-color: #f0f8ff; color: var(--primary-blue); font-weight: 700; }
+        /* إعادة رؤوس الجدول للخط العادي بناءً على طلبك */
+        th { background-color: #f0f8ff; color: var(--primary-blue); font-weight: 400; }
 
         .daily-avg-container { text-align: right; font-size: 0.88rem; padding: 12px 15px; line-height: 1.8; border-radius: 12px; margin-top: 0; margin-bottom: 20px; box-sizing: border-box; border: 1px solid transparent; }
         .avg-safe { background-color: #f1f8e9; color: #33691e; border-color: #dcedc8; }
