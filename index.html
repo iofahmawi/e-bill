@@ -154,7 +154,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 10px;
+            margin-top: 25px; /* تم تعديل المسافة هنا */
         }
 
         button#calculate-btn:active { transform: scale(0.98); }
@@ -185,7 +185,7 @@
             padding: 12px; 
             line-height: 1.6; 
             border-radius: 12px; 
-            margin: 20px 0; /* تم الإصلاح هنا بإضافة px */
+            margin: 20px 0; 
             box-sizing: border-box; 
             border: 1px solid transparent; 
         } 
@@ -466,7 +466,6 @@
             }
         };
 
-        // إعدادات الـ Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
