@@ -49,7 +49,8 @@
         .header-blue {
             background-color: var(--primary);
             color: var(--white);
-            padding: 25px 20px 80px; 
+            /* تم زيادة المسافة العلوية هنا بمقدار 0.5 سم تقريباً */
+            padding: 44px 20px 80px; 
             text-align: center;
             border-bottom-left-radius: 40px;
             border-bottom-right-radius: 40px;
@@ -382,7 +383,6 @@
                             if (predictedCons > 600) trafficClass = "avg-danger";
                             else if (predictedCons > 300) trafficClass = "avg-warning";
                         } else { if (predictedCons > 1000) trafficClass = "avg-danger"; }
-                        // تم تقليل المسافة هنا لتصبح 5px
                         predictionHtml = `<div style="margin-top: 5.5px;">الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> ك.و هي <strong>${formatCurrency(predictedBill)}</strong> د.أ</div>`;
                     }
                     avgDivHtml = `<div class="daily-avg-container ${trafficClass}">معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> ك.و${predictionHtml}</div>`;
