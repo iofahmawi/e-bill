@@ -382,8 +382,8 @@
                             if (predictedCons > 600) trafficClass = "avg-danger";
                             else if (predictedCons > 300) trafficClass = "avg-warning";
                         } else { if (predictedCons > 1000) trafficClass = "avg-danger"; }
-                        // تمت إضافة مسافة علوية (margin-top) إضافية للسطر المتوقع
-                        predictionHtml = `<div style="margin-top: 10px;">الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> ك.و هي <strong>${formatCurrency(predictedBill)}</strong> د.أ</div>`;
+                        // تم تقليل المسافة هنا لتصبح 5px
+                        predictionHtml = `<div style="margin-top: 5.5px;">الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> ك.و هي <strong>${formatCurrency(predictedBill)}</strong> د.أ</div>`;
                     }
                     avgDivHtml = `<div class="daily-avg-container ${trafficClass}">معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> ك.و${predictionHtml}</div>`;
                 }
