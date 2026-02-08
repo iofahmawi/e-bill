@@ -1,73 +1,478 @@
-// sw.js
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>حاسبة الكهرباء الشهرية</title>
+    
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-1024.png">
+    <link rel="apple-touch-icon" href="icon-1024.png">
 
-// 1. تغيير اسم الكاش وتحديث الإصدار
-const CACHE_NAME = 'e-bill-dynamic-v50';
-
-// 2. نخزن فقط الملفات الأساسية جداً لضمان نجاح التثبيت
-const urlsToCache = [
-  './',
-  'index.html',
-  'manifest.json'
-  // أزلنا الصور والخطوط من هنا لتجنب فشل التثبيت إذا لم تكن موجودة
-];
-
-self.addEventListener('install', event => {
-  self.skipWaiting(); // تفعيل التحديث فوراً
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
-
-self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName); // حذف الكاش القديم
-          }
-        })
-      );
-    }).then(() => self.clients.claim()) // السيطرة الفورية على الصفحات المفتوحة
-  );
-});
-
-self.addEventListener('fetch', event => {
-  // استراتيجية: Cache First, then Network, then Save to Cache
-  event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        // 1. إذا وجدنا الملف في الكاش، نرجعه فوراً
-        if (cachedResponse) {
-          return cachedResponse;
+    <style>
+        :root {
+            --primary: #2563eb; 
+            --primary-light: #dbeafe;
+            --secondary-green: #10b981; 
+            --white: #ffffff;
+            --bg-light: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --error-red: #ef4444;
+            --radius: 16px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --standard-height: 42px;
         }
 
-        // 2. إذا لم نجده، نطلبه من الإنترنت
-        return fetch(event.request).then(networkResponse => {
-          // التحقق من صحة الاستجابة
-          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic' && networkResponse.type !== 'cors') {
-            return networkResponse;
-          }
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+        
+        html, body { height: 100%; background-color: var(--bg-light); }
 
-          // 3. نسخ الاستجابة وتخزينها في الكاش للمستقبل
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            // نتأكد أننا لا نخزن طلبات غير مدعومة (مثل طلبات POST أو chrome-extension)
-            if (event.request.method === 'GET' && !event.request.url.startsWith('chrome-extension')) {
-                 cache.put(event.request, responseToCache);
-            }
-          });
+        body {
+            direction: rtl;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-main);
+        }
+        
+        .content-wrapper { flex-grow: 1; display: flex; flex-direction: column; }
 
-          return networkResponse;
+        .header-blue {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 25px 20px 80px; 
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+        }
+
+        .header-blue h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 10px; }
+        .header-blue p { font-size: 1rem; opacity: 0.9; }
+        
+        .card {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px;
+            width: 92%;
+            max-width: 450px;
+            margin: -60px auto 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        .readings-container, .extra-inputs { display: flex; gap: 12px; margin-bottom: 15px; }
+        .reading-input, .waste-input-wrapper { flex: 1; }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            padding-right: 4px;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            height: var(--standard-height);
+            padding: 6px 10px; 
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-align: center; 
+            transition: all 0.2s ease;
+            background: #fdfdfd;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary); 
+            background: var(--white);
+        }
+
+        .radio-group { margin: 15px 0; }
+        .radio-options {
+            display: flex;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 12px;
+            gap: 5px;
+            height: var(--standard-height);
+            align-items: center;
+        }
+
+        .radio-option { flex: 1; position: relative; height: 100%; }
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0; height: 0;
+        }
+
+        .radio-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            margin-bottom: 0;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        button#calculate-btn {
+            width: 100%;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            height: var(--standard-height);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        button#calculate-btn:active { transform: scale(0.98); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; backdrop-filter: blur(4px); }
+        .modal-content { background-color: var(--white); border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); width: 100%; max-width: 450px; position: relative; max-height: 90vh; overflow-y: auto; }
+        #modal-results-content { padding: 25px 15px; } 
+        
+        .result-row { display: flex; justify-content: space-between; align-items: flex-end; margin: 8px 0; font-size: 0.95rem; } 
+        .result-text-value { display: inline-flex; gap: 12px; align-items: baseline; }
+        .result-label { color: var(--text-main); font-weight: 500; }
+        .result-value { color: var(--text-main); font-weight: 700; }
+        
+        hr { border: none; border-top: 1px solid #f1f5f9; margin: 15px 0; }
+        
+        .final-total-section { text-align: center; margin-top: 10px; }
+        .final-total-section p { font-size: 1rem; color: var(--text-main); margin: 0; } 
+        .final-total-section span { font-size: 1.50rem; font-weight: 800; color: var(--secondary-green); display: block; margin-top: 5px; line-height: 1; } 
+        
+        .table-container { border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 15px; width: 100%; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; } 
+        th, td { border-bottom: 1px solid #f1f5f9; padding: 10px 6px; text-align: center; } 
+        th { background-color: #f8fafc; color: var(--primary); font-weight: 700; }
+        
+        .daily-avg-container { 
+            text-align: right; 
+            font-size: 0.9rem; 
+            padding: 12px; 
+            line-height: 1.6; 
+            border-radius: 12px; 
+            margin: 20px 0; 
+            box-sizing: border-box; 
+            border: 1px solid transparent; 
+        } 
+        
+        .avg-safe { background-color: #f1f8e9; color: #33691e; border-color: #dcedc8; }
+        .avg-warning { background-color: #fff8e1; color: #bf360c; border-color: #ffecb3; }
+        .avg-danger { background-color: #fef2f2; color: #991b1b; border-color: #fee2e2; }
+
+        .simple-footer { 
+            text-align: center; 
+            color: var(--text-muted); 
+            font-size: 0.9rem; 
+            padding: 20px 0 calc(15px + env(safe-area-inset-bottom, 0px)); 
+        }
+        .simple-footer a { color: var(--primary); font-weight: 700; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="content-wrapper">
+        <div class="header-blue">
+            <h2>حاسبة الكهرباء الشهرية</h2>
+            <p>احسب فاتورتك بسهولة ودقة</p>
+        </div>
+
+        <div class="card">
+            <div class="input-group">
+                <div class="readings-container">
+                    <div class="reading-input">
+                        <label for="previous-reading">القراءة السابقة</label>
+                        <input type="number" id="previous-reading" class="hide-kb-on-enter">
+                    </div>
+                    <div class="reading-input">
+                        <label for="current-reading">القراءة الحالية</label>
+                        <input type="number" id="current-reading" class="hide-kb-on-enter">
+                    </div>
+                </div>
+                <div class="extra-inputs">
+                    <div style="flex:1;">
+                        <label>تاريخ الفاتورة السابقة</label>
+                        <input type="text" id="reading-day" inputmode="decimal" class="hide-kb-on-enter">
+                    </div>
+                    <div class="waste-input-wrapper">
+                        <label for="waste-fee">رسوم النفايات</label>
+                        <input type="number" id="waste-fee" value="3" class="hide-kb-on-enter">
+                    </div>
+                </div>
+            </div>
+
+            <div class="radio-group">
+                <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block; font-weight: 500;">نوع العداد</label>
+                <div class="radio-options">
+                    <div class="radio-option">
+                        <input type="radio" id="phase-1" name="meter-phase" value="1" checked>
+                        <label for="phase-1">1 فاز</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="phase-3" name="meter-phase" value="3">
+                        <label for="phase-3">3 فاز</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="radio-group">
+                <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block; font-weight: 500;">نوع الاشتراك</label>
+                <div class="radio-options">
+                    <div class="radio-option">
+                        <input type="radio" id="sub-supported" name="subscription-type" value="supported" checked>
+                        <label for="sub-supported">مدعوم</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="sub-unsupported" name="subscription-type" value="unsupported">
+                        <label for="sub-unsupported">غير مدعوم</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" id="calculate-btn" onclick="calculateAndSave()">احسب القيمة</button>
+        </div>
+    </div>
+
+    <div id="result-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modal-results-content"></div>
+        </div>
+    </div>
+    
+    <footer class="simple-footer">
+        طوّر بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.hide-kb-on-enter').forEach(input => {
+            input.addEventListener('keypress', function(e) { if (e.key === 'Enter') { this.blur(); } });
         });
-      }).catch(() => {
-        // في حالة عدم وجود انترنت ولم نجد الملف في الكاش
-        // (يمكن هنا إرجاع صفحة "أنت غير متصل" مخصصة إذا أردت)
-      })
-  );
-});
+
+        function formatNumber(num) { return parseFloat(num).toString(); }
+        function formatCurrency(num) { return formatNumber(num.toFixed(3)); }
+        
+        function getFullCost(cons, subType, waste, phase) {
+            let energyCost = 0;
+            let remaining = cons;
+            let tariffs = subType === 'supported' ? [[300, 0.05], [600, 0.10], [Infinity, 0.20]] : [[1000, 0.12], [Infinity, 0.15]];
+            let acc = 0;
+            for (let i = 0; i < tariffs.length && remaining > 0; i++) {
+                const [limit, price] = tariffs[i];
+                const size = (limit === Infinity) ? Infinity : (limit - acc);
+                const used = Math.min(remaining, size);
+                energyCost += used * price;
+                remaining -= used;
+                acc += used;
+            }
+            let support = 0;
+            if (subType === 'supported') {
+                if (cons >= 51 && cons <= 200) support = 2.5;
+                else if (cons >= 201 && cons <= 600) support = 2.0;
+            }
+            let meterFee = (phase == 3) ? 0.50 : 0.20;
+            const fixedFees = waste + 1.0 + meterFee + (cons / 1000);
+            return (energyCost + fixedFees) - support;
+        }
+
+        function calculateAndSave() {
+            if (document.activeElement) document.activeElement.blur();
+            const success = calculateElectricBill();
+            if (success) {
+                localStorage.setItem('calculator_currentReading', document.getElementById('current-reading').value);
+                localStorage.setItem('calculator_previousReading', document.getElementById('previous-reading').value);
+                localStorage.setItem('calculator_day', document.getElementById('reading-day').value);
+                localStorage.setItem('calculator_waste', document.getElementById('waste-fee').value);
+                localStorage.setItem('calculator_phase', document.querySelector('input[name="meter-phase"]:checked').value);
+                localStorage.setItem('calculator_subscriptionType', document.querySelector('input[name="subscription-type"]:checked').value);
+            }
+        }
+        
+        function calculateElectricBill() {
+            const currentReadingInput = document.getElementById('current-reading');
+            const previousReadingInput = document.getElementById('previous-reading');
+            const readingDayInput = document.getElementById('reading-day');
+            const wasteInput = document.getElementById('waste-fee');
+            const phaseInput = document.querySelector('input[name="meter-phase"]:checked');
+            const subscriptionTypeInput = document.querySelector('input[name="subscription-type"]:checked');
+            
+            const modal = document.getElementById('result-modal');
+            const modalContentDiv = document.getElementById('modal-results-content');
+            
+            const currentReadingValue = currentReadingInput.value.trim();
+            const previousReadingValue = previousReadingInput.value.trim();
+            const readingDayValue = readingDayInput.value.trim();
+            const wasteFeeValue = wasteInput.value.trim() === "" ? 3 : parseFloat(wasteInput.value);
+            const phaseValue = parseInt(phaseInput.value);
+
+            if (currentReadingValue === '') {
+                modalContentDiv.innerHTML = '<p style="color:var(--error-red); text-align:center; font-weight:bold; padding: 20px;">الرجاء إدخال القراءة الحالية على الأقل.</p>';
+                modal.style.display = 'flex';
+                return false;
+            }
+
+            const currentReading = parseFloat(currentReadingValue);
+            const hasPrevious = (previousReadingValue !== '' && parseFloat(previousReadingValue) >= 0);
+            const previousReading = hasPrevious ? parseFloat(previousReadingValue) : 0;
+
+            if (hasPrevious && currentReading < previousReading) {
+                modalContentDiv.innerHTML = '<p style="color:var(--error-red); text-align:center; font-weight:bold; padding: 20px;">الرجاء التأكد من القراءة السابقة.</p>';
+                modal.style.display = 'flex';
+                return false;
+            }
+                
+            const consumption = currentReading - previousReading;
+            const subscriptionType = subscriptionTypeInput.value;
+
+            let avgDivHtml = "";
+            if (hasPrevious && readingDayValue !== "") {
+                const dateParts = readingDayValue.split("-");
+                if (dateParts.length === 3) {
+                    const d = parseInt(dateParts[0]);
+                    const m = parseInt(dateParts[1]) - 1;
+                    const y = parseInt(dateParts[2]);
+                    const startDate = new Date(y, m, d);
+                    const now = new Date();
+                    startDate.setHours(0,0,0,0); now.setHours(0,0,0,0);
+                    const diffTime = now - startDate;
+                    let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    if (diffDays <= 0) diffDays = 1;
+                    const dailyAvgRaw = (consumption / diffDays).toFixed(2);
+                    const dailyAvg = formatNumber(dailyAvgRaw);
+                    let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
+                    let predictionHtml = "";
+                    let trafficClass = "avg-safe";
+                    if (diffDays >= 10) {
+                        const predictedCons = Math.round(dailyAvgRaw * 30);
+                        const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue, phaseValue);
+                        if (subscriptionType === 'supported') {
+                            if (predictedCons > 600) trafficClass = "avg-danger";
+                            else if (predictedCons > 300) trafficClass = "avg-warning";
+                        } else { if (predictedCons > 1000) trafficClass = "avg-danger"; }
+                        predictionHtml = `<br>الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> ك.و هي <strong>${formatCurrency(predictedBill)}</strong> د.أ`;
+                    }
+                    avgDivHtml = `<div class="daily-avg-container ${trafficClass}">معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> ك.و${predictionHtml}</div>`;
+                }
+            }
+
+            let totalEnergyCost = 0.0;
+            let tableRowsHtml = '';
+            let remaining = consumption;
+            let tariffs = subscriptionType === 'supported' ? [[300, 0.05], [600, 0.10], [Infinity, 0.20]] : [[1000, 0.12], [Infinity, 0.15]];
+            let accumulatedConsumption = 0; 
+            for (let i = 0; i < tariffs.length && remaining > 0; i++) {
+                const [currentLimit, price] = tariffs[i];
+                const blockStart = accumulatedConsumption + 1;
+                const blockEnd = currentLimit === Infinity ? Infinity : currentLimit;
+                const blockSize = blockEnd - accumulatedConsumption;
+                const usedInBlock = Math.min(remaining, blockSize);
+                const costInBlock = parseFloat((usedInBlock * price).toFixed(5));
+                totalEnergyCost += costInBlock;
+                remaining -= usedInBlock;
+                accumulatedConsumption += usedInBlock; 
+                let rangeLabel = currentLimit === Infinity ? `أكثر من ${blockStart - 1}` : `${blockStart} - ${blockEnd}`;
+                if (usedInBlock > 0) {
+                    tableRowsHtml += `<tr><td>${rangeLabel}</td><td>${formatNumber(usedInBlock)}</td><td>${formatCurrency(price)}</td><td>${formatCurrency(costInBlock)}</td></tr>`;
+                }
+            }
+
+            let governmentSupport = 0.0;
+            if (subscriptionType === 'supported') {
+                if (consumption >= 51 && consumption <= 200) governmentSupport = 2.5;
+                else if (consumption >= 201 && consumption <= 600) governmentSupport = 2.0;
+            }
+            const wasteFee = wasteFeeValue, tvFee = 1.0, meterFee = (phaseValue == 3 ? 0.50 : 0.20), ruralFilss = consumption / 1000; 
+            const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
+            const finalTotal = totalBillBeforeSupport - governmentSupport;
+
+            const resultTitle = subscriptionType === 'supported' ? 'اشتراك مدعوم' : 'اشتراك غير مدعوم';
+            const titleColor = subscriptionType === 'supported' ? 'var(--secondary-green)' : 'var(--error-red)';
+
+            modalContentDiv.innerHTML = `
+                <div style="width: 100%; text-align: center; margin-bottom: 20px; display: block;">
+                    <h2 style="color: ${titleColor}; margin: 0 auto; font-size: 1.1rem; font-weight: 700; width: fit-content; display: inline-block;">${resultTitle}</h2>
+                </div>
+                ${avgDivHtml}
+                <div class="result-row" style="margin-top: 15px; margin-bottom: 10px;"><span class="result-label" style="font-weight: bold;">كلفة الاستهلاك الحالي ${formatNumber(consumption)} كيلوواط:</span></div>
+                <div class="table-container">
+                    <table><thead><tr><th>الشريحة</th><th>استهلاك</th><th>التعرفة</th><th>الإجمالي</th></tr></thead>
+                    <tbody>${tableRowsHtml}</tbody></table>
+                </div>
+                <div class="result-row" style="margin-bottom: 10px;"><span class="result-label" style="font-weight: bold;">رسوم إضافية:</span></div>
+                <div class="table-container" style="margin-bottom: 5px;">
+                    <table><thead><tr><th>تلفزيون</th><th>نفايات</th><th>عداد</th><th>فلس الريف</th></tr></thead>
+                    <tbody><tr><td>${formatCurrency(tvFee)}</td><td>${formatCurrency(wasteFee)}</td><td>${formatCurrency(meterFee)}</td><td>${formatCurrency(ruralFilss)}</td></tr></tbody></table>
+                </div>
+                <div class="result-row" style="margin-top: 20px;"><span class="result-text-value"><span class="result-label">الإجمالي قبل الدعم:</span><span class="result-value">${formatCurrency(totalBillBeforeSupport)}</span></span></div>
+                <div class="result-row"><span class="result-text-value"><span class="result-label">قيمة الدعم الحكومي:</span><span class="result-value">${formatCurrency(governmentSupport)}</span></span></div>
+                <hr>
+                <div class="final-total-section"><p>المبلغ النهائي المطلوب:</p><span>${formatCurrency(finalTotal)}</span></div>
+            `;
+            
+            modal.style.display = 'flex';
+            modal.onclick = (event) => { if (event.target === modal) modal.style.display = 'none'; };
+            return true;
+        }
+
+        window.onload = () => {
+            if (localStorage.getItem('calculator_currentReading')) {
+                document.getElementById('current-reading').value = localStorage.getItem('calculator_currentReading');
+                document.getElementById('previous-reading').value = localStorage.getItem('calculator_previousReading');
+                document.getElementById('reading-day').value = localStorage.getItem('calculator_day') || '';
+                document.getElementById('waste-fee').value = localStorage.getItem('calculator_waste') || '3';
+                const savedPhase = localStorage.getItem('calculator_phase');
+                if (savedPhase) {
+                    const phaseRadio = document.getElementById(`phase-${savedPhase}`);
+                    if(phaseRadio) phaseRadio.checked = true;
+                }
+                const savedSub = localStorage.getItem('calculator_subscriptionType');
+                if (savedSub) {
+                    const radio = document.getElementById(`sub-${savedSub}`);
+                    if(radio) radio.checked = true;
+                }
+            }
+        };
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW Registered'))
+                .catch(err => console.log('SW Failed', err));
+            });
+        }
+    </script>
+</body>
+</html>
