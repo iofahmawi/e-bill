@@ -49,8 +49,7 @@
         .header-blue {
             background-color: var(--primary);
             color: var(--white);
-            /* تم زيادة المسافة العلوية هنا بمقدار 0.5 سم تقريباً */
-            padding: 44px 20px 80px; 
+            padding: 40px 20px 80px; 
             text-align: center;
             border-bottom-left-radius: 40px;
             border-bottom-right-radius: 40px;
@@ -279,6 +278,7 @@
     </footer>
 
     <script>
+        // السكريبتات الأصلية كما هي تماماً
         document.querySelectorAll('.hide-kb-on-enter').forEach(input => {
             input.addEventListener('keypress', function(e) { if (e.key === 'Enter') { this.blur(); } });
         });
