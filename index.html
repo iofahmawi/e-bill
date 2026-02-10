@@ -190,7 +190,7 @@
             border: 1px solid transparent; 
         } 
         
-        .avg-safe { background-color: #f1f8e9; color: #33691e; border-color: #dcedc8; }
+        /* تم إلغاء اللون الأخضر (avg-safe) واستبداله بالأصفر كحالة افتراضية */
         .avg-warning { background-color: #fff8e1; color: #bf360c; border-color: #ffecb3; }
         .avg-danger { background-color: #fef2f2; color: #991b1b; border-color: #fee2e2; }
 
@@ -278,7 +278,6 @@
     </footer>
 
     <script>
-        // السكريبتات الأصلية كما هي تماماً
         document.querySelectorAll('.hide-kb-on-enter').forEach(input => {
             input.addEventListener('keypress', function(e) { if (e.key === 'Enter') { this.blur(); } });
         });
@@ -375,17 +374,24 @@
                     const dailyAvg = formatNumber(dailyAvgRaw);
                     let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
                     let predictionHtml = "";
-                    let trafficClass = "avg-safe";
+                    let trafficClass = "avg-warning"; // جعل اللون الأصفر هو الحالة الافتراضية
+                    
                     if (diffDays >= 10) {
                         const predictedCons = Math.round(dailyAvgRaw * 30);
                         const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue, phaseValue);
+                        
+                        // تعديل منطق الألوان للأصفر والأحمر فقط
                         if (subscriptionType === 'supported') {
                             if (predictedCons > 600) trafficClass = "avg-danger";
-                            else if (predictedCons > 300) trafficClass = "avg-warning";
-                        } else { if (predictedCons > 1000) trafficClass = "avg-danger"; }
-                        predictionHtml = `<div style="margin-top: 5.5px;">الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> ك.و هي <strong>${formatCurrency(predictedBill)}</strong> د.أ</div>`;
+                            else trafficClass = "avg-warning";
+                        } else {
+                            if (predictedCons > 1000) trafficClass = "avg-danger";
+                            else trafficClass = "avg-warning";
+                        }
+                        
+                        predictionHtml = `<div style="margin-top: 5.5px;">الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> كيلوواط <strong>${formatCurrency(predictedBill)}</strong> دينار</div>`;
                     }
-                    avgDivHtml = `<div class="daily-avg-container ${trafficClass}">معدل الاستهلاك اليومي خلال ${dayLabel} هو <strong>${dailyAvg}</strong> ك.و${predictionHtml}</div>`;
+                    avgDivHtml = `<div class="daily-avg-container ${trafficClass}">معدل الاستهلاك اليومي خلال ${dayLabel} <strong>${dailyAvg}</strong> كيلوواط${predictionHtml}</div>`;
                 }
             }
 
