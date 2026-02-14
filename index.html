@@ -49,19 +49,20 @@
         .header-blue {
             background-color: var(--primary);
             color: var(--white);
-            padding: 40px 20px 80px; 
+            /* تم تعديل الـ padding ليطابق حاسبة الزيت (80px في الأسفل) */
+            padding: 25px 20px 80px; 
             text-align: center;
             border-bottom-left-radius: 40px;
             border-bottom-right-radius: 40px;
         }
 
-        /* --- إضافة المسافة المطلوبة لوضع الـ PWA فقط --- */
+        /* ميزة المسافة في وضع PWA */
         @media (display-mode: standalone), (display-mode: fullscreen) {
             .header-blue {
                 padding-top: calc(1.25cm + env(safe-area-inset-top, 0px));
+                padding-bottom: 80px;
             }
         }
-        /* ------------------------------------------ */
 
         .header-blue h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 10px; }
         .header-blue p { font-size: 1rem; opacity: 0.9; }
@@ -73,7 +74,8 @@
             padding: 28px;
             width: 92%;
             max-width: 450px;
-            margin: -60px auto 20px;
+            /* تم تعديل الـ margin السالب ليطابق حاسبة الزيت (-45px) */
+            margin: -45px auto 20px;
             position: relative;
             z-index: 10;
         }
