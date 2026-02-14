@@ -55,6 +55,14 @@
             border-bottom-right-radius: 40px;
         }
 
+        /* --- إضافة المسافة المطلوبة لوضع الـ PWA فقط --- */
+        @media (display-mode: standalone), (display-mode: fullscreen) {
+            .header-blue {
+                padding-top: calc(1.25cm + env(safe-area-inset-top, 0px));
+            }
+        }
+        /* ------------------------------------------ */
+
         .header-blue h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 10px; }
         .header-blue p { font-size: 1rem; opacity: 0.9; }
         
@@ -190,7 +198,6 @@
             border: 1px solid transparent; 
         } 
         
-        /* تم إلغاء اللون الأخضر (avg-safe) واستبداله بالأصفر كحالة افتراضية */
         .avg-warning { background-color: #fff8e1; color: #bf360c; border-color: #ffecb3; }
         .avg-danger { background-color: #fef2f2; color: #991b1b; border-color: #fee2e2; }
 
@@ -374,13 +381,12 @@
                     const dailyAvg = formatNumber(dailyAvgRaw);
                     let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
                     let predictionHtml = "";
-                    let trafficClass = "avg-warning"; // جعل اللون الأصفر هو الحالة الافتراضية
+                    let trafficClass = "avg-warning"; 
                     
                     if (diffDays >= 10) {
                         const predictedCons = Math.round(dailyAvgRaw * 30);
                         const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue, phaseValue);
                         
-                        // تعديل منطق الألوان للأصفر والأحمر فقط
                         if (subscriptionType === 'supported') {
                             if (predictedCons > 600) trafficClass = "avg-danger";
                             else trafficClass = "avg-warning";
