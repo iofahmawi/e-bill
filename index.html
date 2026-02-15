@@ -49,14 +49,12 @@
         .header-blue {
             background-color: var(--primary);
             color: var(--white);
-            /* تم تعديل الـ padding ليطابق حاسبة الزيت (80px في الأسفل) */
             padding: 25px 20px 80px; 
             text-align: center;
             border-bottom-left-radius: 40px;
             border-bottom-right-radius: 40px;
         }
 
-        /* ميزة المسافة في وضع PWA */
         @media (display-mode: standalone), (display-mode: fullscreen) {
             .header-blue {
                 padding-top: calc(1.10cm + env(safe-area-inset-top, 0px));
@@ -74,7 +72,6 @@
             padding: 28px;
             width: 92%;
             max-width: 450px;
-            /* تم تعديل الـ margin السالب ليطابق حاسبة الزيت (-45px) */
             margin: -55px auto 20px;
             position: relative;
             z-index: 10;
@@ -350,6 +347,8 @@
             if (currentReadingValue === '') {
                 modalContentDiv.innerHTML = '<p style="color:var(--error-red); text-align:center; font-weight:bold; padding: 20px;">الرجاء إدخال القراءة الحالية على الأقل.</p>';
                 modal.style.display = 'flex';
+                // التعديل: تفعيل الإغلاق عند الضغط في الخلفية لحالة الخطأ
+                modal.onclick = (event) => { if (event.target === modal) modal.style.display = 'none'; };
                 return false;
             }
 
@@ -360,6 +359,8 @@
             if (hasPrevious && currentReading < previousReading) {
                 modalContentDiv.innerHTML = '<p style="color:var(--error-red); text-align:center; font-weight:bold; padding: 20px;">الرجاء التأكد من القراءة السابقة.</p>';
                 modal.style.display = 'flex';
+                // التعديل: تفعيل الإغلاق عند الضغط في الخلفية لحالة الخطأ
+                modal.onclick = (event) => { if (event.target === modal) modal.style.display = 'none'; };
                 return false;
             }
                 
