@@ -232,7 +232,7 @@
                 <div class="extra-inputs">
                     <div style="flex:1;">
                         <label>تاريخ الفاتورة السابقة</label>
-                        <input type="text" id="reading-day" inputmode="decimal" class="hide-kb-on-enter">
+                        <input type="text" id="reading-day" placeholder="" inputmode="decimal" class="hide-kb-on-enter">
                     </div>
                     <div class="waste-input-wrapper">
                         <label for="waste-fee">رسوم النفايات</label>
@@ -354,14 +354,6 @@
             const currentReading = parseFloat(currentReadingValue);
             const hasPrevious = (previousReadingValue !== '' && parseFloat(previousReadingValue) >= 0);
             const previousReading = hasPrevious ? parseFloat(previousReadingValue) : 0;
-
-            if (hasPrevious && currentReading < previousReading) {
-                modalContentDiv.innerHTML = '<p style="color:var(--error-red); text-align:center; font-weight:bold; padding: 20px;">الرجاء التأكد من القراءة السابقة.</p>';
-                modal.style.display = 'flex';
-                modal.onclick = (event) => { if (event.target === modal) modal.style.display = 'none'; };
-                return false;
-            }
-                
             const consumption = currentReading - previousReading;
             const subscriptionType = subscriptionTypeInput.value;
 
@@ -380,13 +372,16 @@
                     if (diffDays <= 0) diffDays = 1;
                     const dailyAvgRaw = (consumption / diffDays).toFixed(2);
                     const dailyAvg = formatNumber(dailyAvgRaw);
+                    
                     let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
                     let predictionHtml = "";
                     let trafficClass = "avg-warning"; 
-                    
-                    if (diffDays >= 10) {
-                        // التعديل هنا: نضرب المتوسط في عدد الأيام الفعلي بدلاً من 30
-                        const predictedCons = Math.round(dailyAvgRaw * diffDays);
+
+                    const endDateOfCycle = new Date(y, m + 1, d);
+                    const totalCycleDays = Math.round((endDateOfCycle - startDate) / (1000 * 60 * 60 * 24));
+
+                    if (diffDays >= 1) {
+                        const predictedCons = Math.round(dailyAvgRaw * totalCycleDays);
                         const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue, phaseValue);
                         
                         if (subscriptionType === 'supported') {
@@ -407,20 +402,20 @@
             let tableRowsHtml = '';
             let remaining = consumption;
             let tariffs = subscriptionType === 'supported' ? [[300, 0.05], [600, 0.10], [Infinity, 0.20]] : [[1000, 0.12], [Infinity, 0.15]];
-            let accumulatedConsumption = 0; 
+            let acc_cons = 0; 
             for (let i = 0; i < tariffs.length && remaining > 0; i++) {
-                const [currentLimit, price] = tariffs[i];
-                const blockStart = accumulatedConsumption + 1;
-                const blockEnd = currentLimit === Infinity ? Infinity : currentLimit;
-                const blockSize = blockEnd - accumulatedConsumption;
-                const usedInBlock = Math.min(remaining, blockSize);
-                const costInBlock = parseFloat((usedInBlock * price).toFixed(5));
-                totalEnergyCost += costInBlock;
-                remaining -= usedInBlock;
-                accumulatedConsumption += usedInBlock; 
-                let rangeLabel = currentLimit === Infinity ? `أكثر من ${blockStart - 1}` : `${blockStart} - ${blockEnd}`;
-                if (usedInBlock > 0) {
-                    tableRowsHtml += `<tr><td>${rangeLabel}</td><td>${formatNumber(usedInBlock)}</td><td>${formatCurrency(price)}</td><td>${formatCurrency(costInBlock)}</td></tr>`;
+                const [limit, price] = tariffs[i];
+                const start = acc_cons + 1;
+                const end = limit === Infinity ? Infinity : limit;
+                const size = end - acc_cons;
+                const used = Math.min(remaining, size);
+                const cost = parseFloat((used * price).toFixed(5));
+                totalEnergyCost += cost;
+                remaining -= used;
+                acc_cons += used; 
+                let label = limit === Infinity ? `أكثر من ${start - 1}` : `${start} - ${end}`;
+                if (used > 0) {
+                    tableRowsHtml += `<tr><td>${label}</td><td>${formatNumber(used)}</td><td>${formatCurrency(price)}</td><td>${formatCurrency(cost)}</td></tr>`;
                 }
             }
 
@@ -433,8 +428,9 @@
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
+            // تم تصحيح المسمى واللون هنا
             const resultTitle = subscriptionType === 'supported' ? 'اشتراك مدعوم' : 'اشتراك غير مدعوم';
-            const titleColor = subscriptionType === 'supported' ? 'var(--secondary-green)' : 'var(--error-red)';
+            const titleColor = 'var(--secondary-green)'; // اللون الأخضر لكلا النوعين كما طلبت
 
             modalContentDiv.innerHTML = `
                 <div style="width: 100%; text-align: center; margin-bottom: 20px; display: block;">
