@@ -428,9 +428,8 @@
             const totalBillBeforeSupport = totalEnergyCost + wasteFee + tvFee + meterFee + ruralFilss;
             const finalTotal = totalBillBeforeSupport - governmentSupport;
 
-            // تم تصحيح المسمى واللون هنا
             const resultTitle = subscriptionType === 'supported' ? 'اشتراك مدعوم' : 'اشتراك غير مدعوم';
-            const titleColor = 'var(--secondary-green)'; // اللون الأخضر لكلا النوعين كما طلبت
+            const titleColor = 'var(--secondary-green)'; 
 
             modalContentDiv.innerHTML = `
                 <div style="width: 100%; text-align: center; margin-bottom: 20px; display: block;">
