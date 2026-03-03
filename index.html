@@ -289,6 +289,7 @@
         طوّر بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         // ترتيب الحقول للانتقال عند Enter
         const fieldIds = ['current-reading', 'previous-reading', 'reading-day', 'waste-fee'];
@@ -498,6 +499,16 @@
 
             modal.style.display = 'flex';
             modal.onclick = (event) => { if (event.target === modal) modal.style.display = 'none'; };
+            document.querySelector('.modal-content').onclick = (event) => {
+                event.stopPropagation();
+                html2canvas(document.querySelector('.modal-content'), { scale: window.devicePixelRatio * 3, useCORS: true }).then(canvas => {
+                    const link = document.createElement('a');
+                    const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+                    link.download = `فاتورة-الكهرباء-${today}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            };
             return true;
         }
 
