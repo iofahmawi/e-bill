@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>حاسبة الكهرباء الشهرية</title>
-    
     <meta name="theme-color" content="#2563eb">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-1024.png">
@@ -33,7 +32,7 @@
             -webkit-tap-highlight-color: transparent;
             outline: none;
         }
-        
+
         html, body { height: 100%; background-color: var(--bg-light); }
 
         body {
@@ -43,7 +42,7 @@
             flex-direction: column;
             color: var(--text-main);
         }
-        
+
         .content-wrapper { flex-grow: 1; display: flex; flex-direction: column; }
 
         .header-blue {
@@ -64,7 +63,7 @@
 
         .header-blue h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 10px; }
         .header-blue p { font-size: 1rem; opacity: 0.9; }
-        
+
         .card {
             background-color: var(--white);
             border-radius: var(--radius);
@@ -89,7 +88,7 @@
             padding-right: 4px;
             font-weight: 500;
         }
-        
+
         .input-group input {
             width: 100%;
             height: var(--standard-height);
@@ -106,6 +105,12 @@
         .input-group input:focus {
             border-color: var(--primary); 
             background: var(--white);
+        }
+
+        /* تنسيق حقل التاريخ: اتجاه RTL */
+        #reading-day {
+            direction: rtl;
+            text-align: center;
         }
 
         .radio-group { margin: 15px 0; }
@@ -146,7 +151,7 @@
             color: var(--primary);
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        
+
         button#calculate-btn {
             width: 100%;
             background: var(--primary);
@@ -169,23 +174,23 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; backdrop-filter: blur(4px); }
         .modal-content { background-color: var(--white); border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); width: 100%; max-width: 450px; position: relative; max-height: 90vh; overflow-y: auto; }
         #modal-results-content { padding: 25px 15px; } 
-        
+
         .result-row { display: flex; justify-content: space-between; align-items: flex-end; margin: 8px 0; font-size: 0.95rem; } 
         .result-text-value { display: inline-flex; gap: 12px; align-items: baseline; }
         .result-label { color: var(--text-main); font-weight: 500; }
         .result-value { color: var(--text-main); font-weight: 700; }
-        
+
         hr { border: none; border-top: 1px solid #f1f5f9; margin: 15px 0; }
-        
+
         .final-total-section { text-align: center; margin-top: 10px; }
         .final-total-section p { font-size: 1rem; color: var(--text-main); margin: 0; } 
         .final-total-section span { font-size: 1.55rem; font-weight: 800; color: var(--secondary-green); display: block; margin-top: 5px; line-height: 1; } 
-        
+
         .table-container { border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 15px; width: 100%; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; } 
         th, td { border-bottom: 1px solid #f1f5f9; padding: 10px 6px; text-align: center; } 
         th { background-color: #f8fafc; color: var(--primary); font-weight: 700; }
-        
+
         .daily-avg-container { 
             text-align: right; 
             font-size: 0.9rem; 
@@ -196,7 +201,7 @@
             box-sizing: border-box; 
             border: 1px solid transparent; 
         } 
-        
+
         .avg-warning { background-color: #fff8e1; color: #bf360c; border-color: #ffecb3; }
         .avg-danger { background-color: #fef2f2; color: #991b1b; border-color: #fee2e2; }
 
@@ -222,21 +227,22 @@
                 <div class="readings-container">
                     <div class="reading-input">
                         <label for="previous-reading">القراءة السابقة</label>
-                        <input type="number" id="previous-reading" class="hide-kb-on-enter">
+                        <input type="number" id="previous-reading" class="enter-to-next">
                     </div>
                     <div class="reading-input">
                         <label for="current-reading">القراءة الحالية</label>
-                        <input type="number" id="current-reading" class="hide-kb-on-enter">
+                        <input type="number" id="current-reading" class="enter-to-next">
                     </div>
                 </div>
                 <div class="extra-inputs">
                     <div style="flex:1;">
                         <label>تاريخ الفاتورة السابقة</label>
-                        <input type="text" id="reading-day" placeholder="" inputmode="decimal" class="hide-kb-on-enter">
+                        <!-- استخدام inputmode numeric لاظهار لوحة الأرقام مع الاحتفاظ بالنص للشرط -->
+                        <input type="text" id="reading-day" placeholder="" inputmode="numeric" pattern="\d*" class="enter-to-next" autocomplete="off" spellcheck="false">
                     </div>
                     <div class="waste-input-wrapper">
                         <label for="waste-fee">رسوم النفايات</label>
-                        <input type="number" id="waste-fee" value="3" class="hide-kb-on-enter">
+                        <input type="number" id="waste-fee" value="3" class="enter-to-next">
                     </div>
                 </div>
             </div>
@@ -278,19 +284,57 @@
             <div id="modal-results-content"></div>
         </div>
     </div>
-    
+
     <footer class="simple-footer">
         طوّر بواسطة <a href="https://github.com/iofahmawi" target="_blank" rel="noopener noreferrer">iofahmawi</a>
     </footer>
 
     <script>
-        document.querySelectorAll('.hide-kb-on-enter').forEach(input => {
-            input.addEventListener('keypress', function(e) { if (e.key === 'Enter') { this.blur(); } });
+        // ترتيب الحقول للانتقال عند Enter
+        const fieldIds = ['current-reading', 'previous-reading', 'reading-day', 'waste-fee'];
+
+        // إضافة معالج keypress لكل حقل بناءً على الفئة enter-to-next
+        document.querySelectorAll('.enter-to-next').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // منع أي سلوك افتراضي
+                    const currentId = this.id;
+                    const currentIndex = fieldIds.indexOf(currentId);
+                    if (currentIndex !== -1 && currentIndex < fieldIds.length - 1) {
+                        // الانتقال إلى الحقل التالي
+                        const nextId = fieldIds[currentIndex + 1];
+                        document.getElementById(nextId).focus();
+                    } else {
+                        // إذا كان آخر حقل، نخفي لوحة المفاتيح
+                        this.blur();
+                    }
+                }
+            });
+        });
+
+        // دالة تحويل التاريخ من صيغة يوم-شهر-سنة إلى سنة-شهر-يوم عند مغادرة الحقل
+        function convertToYMD(input) {
+            let val = input.value.trim();
+            if (!val) return;
+            val = val.replace(/\s+/g, '');
+            const ddmmyyyyPattern = /^(\d{1,2})-(\d{1,2})-(\d{4})$/;
+            const match = val.match(ddmmyyyyPattern);
+            if (match) {
+                let day = match[1].padStart(2, '0');
+                let month = match[2].padStart(2, '0');
+                let year = match[3];
+                input.value = `${year}-${month}-${day}`;
+            }
+        }
+
+        // ربط حدث فقدان التركيز لحقل التاريخ (للتحويل)
+        document.getElementById('reading-day').addEventListener('blur', function() {
+            convertToYMD(this);
         });
 
         function formatNumber(num) { return parseFloat(num).toString(); }
         function formatCurrency(num) { return formatNumber(num.toFixed(3)); }
-        
+
         function getFullCost(cons, subType, waste, phase) {
             let energyCost = 0;
             let remaining = cons;
@@ -326,7 +370,7 @@
                 localStorage.setItem('calculator_subscriptionType', document.querySelector('input[name="subscription-type"]:checked').value);
             }
         }
-        
+
         function calculateElectricBill() {
             const currentReadingInput = document.getElementById('current-reading');
             const previousReadingInput = document.getElementById('previous-reading');
@@ -334,10 +378,10 @@
             const wasteInput = document.getElementById('waste-fee');
             const phaseInput = document.querySelector('input[name="meter-phase"]:checked');
             const subscriptionTypeInput = document.querySelector('input[name="subscription-type"]:checked');
-            
+
             const modal = document.getElementById('result-modal');
             const modalContentDiv = document.getElementById('modal-results-content');
-            
+
             const currentReadingValue = currentReadingInput.value.trim();
             const previousReadingValue = previousReadingInput.value.trim();
             const readingDayValue = readingDayInput.value.trim();
@@ -361,9 +405,9 @@
             if (hasPrevious && readingDayValue !== "") {
                 const dateParts = readingDayValue.split("-");
                 if (dateParts.length === 3) {
-                    const d = parseInt(dateParts[0]);
-                    const m = parseInt(dateParts[1]) - 1;
-                    const y = parseInt(dateParts[2]);
+                    const y = parseInt(dateParts[0], 10);
+                    const m = parseInt(dateParts[1], 10) - 1;
+                    const d = parseInt(dateParts[2], 10);
                     const startDate = new Date(y, m, d);
                     const now = new Date();
                     startDate.setHours(0,0,0,0); now.setHours(0,0,0,0);
@@ -372,7 +416,7 @@
                     if (diffDays <= 0) diffDays = 1;
                     const dailyAvgRaw = (consumption / diffDays).toFixed(2);
                     const dailyAvg = formatNumber(dailyAvgRaw);
-                    
+
                     let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
                     let predictionHtml = "";
                     let trafficClass = "avg-warning"; 
@@ -383,7 +427,7 @@
                     if (diffDays >= 1) {
                         const predictedCons = Math.round(dailyAvgRaw * totalCycleDays);
                         const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue, phaseValue);
-                        
+
                         if (subscriptionType === 'supported') {
                             if (predictedCons > 600) trafficClass = "avg-danger";
                             else trafficClass = "avg-warning";
@@ -391,7 +435,7 @@
                             if (predictedCons > 1000) trafficClass = "avg-danger";
                             else trafficClass = "avg-warning";
                         }
-                        
+
                         predictionHtml = `<div style="margin-top: 5.5px;">الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> كيلوواط <strong>${formatCurrency(predictedBill)}</strong> دينار</div>`;
                     }
                     avgDivHtml = `<div class="daily-avg-container ${trafficClass}">معدل الاستهلاك اليومي خلال ${dayLabel} <strong>${dailyAvg}</strong> كيلوواط${predictionHtml}</div>`;
@@ -451,7 +495,7 @@
                 <hr>
                 <div class="final-total-section"><p>المبلغ النهائي المطلوب:</p><span>${formatCurrency(finalTotal)}</span></div>
             `;
-            
+
             modal.style.display = 'flex';
             modal.onclick = (event) => { if (event.target === modal) modal.style.display = 'none'; };
             return true;
@@ -461,7 +505,10 @@
             if (localStorage.getItem('calculator_currentReading')) {
                 document.getElementById('current-reading').value = localStorage.getItem('calculator_currentReading');
                 document.getElementById('previous-reading').value = localStorage.getItem('calculator_previousReading');
-                document.getElementById('reading-day').value = localStorage.getItem('calculator_day') || '';
+                
+                const savedDay = localStorage.getItem('calculator_day') || '';
+                document.getElementById('reading-day').value = savedDay;
+
                 document.getElementById('waste-fee').value = localStorage.getItem('calculator_waste') || '3';
                 const savedPhase = localStorage.getItem('calculator_phase');
                 if (savedPhase) {
