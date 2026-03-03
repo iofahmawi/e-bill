@@ -501,7 +501,14 @@
             modal.onclick = (event) => { if (event.target === modal) modal.style.display = 'none'; };
             document.querySelector('.modal-content').onclick = (event) => {
                 event.stopPropagation();
-                html2canvas(document.querySelector('.modal-content'), { scale: window.devicePixelRatio * 3, useCORS: true }).then(canvas => {
+                const el = document.querySelector('.modal-content');
+                const prevMaxHeight = el.style.maxHeight;
+                const prevOverflow = el.style.overflowY;
+                el.style.maxHeight = 'none';
+                el.style.overflowY = 'visible';
+                html2canvas(el, { scale: window.devicePixelRatio * 3, useCORS: true }).then(canvas => {
+                    el.style.maxHeight = prevMaxHeight;
+                    el.style.overflowY = prevOverflow;
                     const link = document.createElement('a');
                     const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
                     link.download = `فاتورة-الكهرباء-${today}.png`;
