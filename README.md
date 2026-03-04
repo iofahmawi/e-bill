@@ -1,6 +1,6 @@
 <div dir="rtl">
 
-## 💡 حاسبة فاتورة الكهرباء
+## 💡 حاسبة الكهرباء الشهرية
 
 [![version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/iofahmawi/e-bill)
 [![PWA](https://img.shields.io/badge/PWA-Enabled-brightgreen)](https://iofahmawi.github.io/e-bill/)
