@@ -313,19 +313,30 @@
             });
         });
 
-        // دالة تحويل التاريخ من صيغة يوم-شهر-سنة إلى سنة-شهر-يوم عند مغادرة الحقل
+        // دالة تحويل التاريخ: تقبل أي صيغة وتعرض DD-MM-YYYY بصرياً وتخزن YYYY-MM-DD في data-value
         function convertToYMD(input) {
-            let val = input.value.trim();
+            let val = input.value.trim().replace(/\s+/g, '');
             if (!val) return;
-            val = val.replace(/\s+/g, '');
-            const ddmmyyyyPattern = /^(\d{1,2})-(\d{1,2})-(\d{4})$/;
-            const match = val.match(ddmmyyyyPattern);
-            if (match) {
-                let day = match[1].padStart(2, '0');
-                let month = match[2].padStart(2, '0');
-                let year = match[3];
-                input.value = `${year}-${month}-${day}`;
+
+            let day, month, year, m;
+
+            const ddmmyyyy = /^(\d{1,2})-(\d{1,2})-(\d{4})$/;
+            const yyyymmdd = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+
+            if ((m = val.match(ddmmyyyy))) {
+                day = m[1].padStart(2, '0');
+                month = m[2].padStart(2, '0');
+                year = m[3];
+            } else if ((m = val.match(yyyymmdd))) {
+                year = m[1];
+                month = m[2].padStart(2, '0');
+                day = m[3].padStart(2, '0');
+            } else {
+                return;
             }
+
+            input.dataset.value = `${year}-${month}-${day}`;
+            input.value = `${year}-${month}-${day}`;
         }
 
         // ربط حدث فقدان التركيز لحقل التاريخ (للتحويل)
@@ -365,7 +376,7 @@
             if (success) {
                 localStorage.setItem('calculator_currentReading', document.getElementById('current-reading').value);
                 localStorage.setItem('calculator_previousReading', document.getElementById('previous-reading').value);
-                localStorage.setItem('calculator_day', document.getElementById('reading-day').value);
+                localStorage.setItem('calculator_day', document.getElementById('reading-day').dataset.value || document.getElementById('reading-day').value);
                 localStorage.setItem('calculator_waste', document.getElementById('waste-fee').value);
                 localStorage.setItem('calculator_phase', document.querySelector('input[name="meter-phase"]:checked').value);
                 localStorage.setItem('calculator_subscriptionType', document.querySelector('input[name="subscription-type"]:checked').value);
@@ -385,7 +396,7 @@
 
             const currentReadingValue = currentReadingInput.value.trim();
             const previousReadingValue = previousReadingInput.value.trim();
-            const readingDayValue = readingDayInput.value.trim();
+            const readingDayValue = (readingDayInput.dataset.value || readingDayInput.value).trim();
             const wasteFeeValue = wasteInput.value.trim() === "" ? 3 : parseFloat(wasteInput.value);
             const phaseValue = parseInt(phaseInput.value);
 
@@ -532,7 +543,10 @@
                 document.getElementById('previous-reading').value = localStorage.getItem('calculator_previousReading');
                 
                 const savedDay = localStorage.getItem('calculator_day') || '';
-                document.getElementById('reading-day').value = savedDay;
+                if (savedDay) {
+                    document.getElementById('reading-day').value = savedDay;
+                    convertToYMD(document.getElementById('reading-day'));
+                }
 
                 document.getElementById('waste-fee').value = localStorage.getItem('calculator_waste') || '3';
                 const savedPhase = localStorage.getItem('calculator_phase');
