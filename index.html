@@ -433,7 +433,7 @@
                     const diffTime = now - startDate;
                     let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
                     if (diffDays <= 0) diffDays = 1;
-                    const dailyAvgRaw = (consumption / diffDays).toFixed(2);
+                    const dailyAvgRaw = parseFloat((consumption / diffDays).toFixed(2));
                     const dailyAvg = formatNumber(dailyAvgRaw);
 
                     let dayLabel = (diffDays === 1) ? "يوم واحد" : (diffDays === 2) ? "يومين" : (diffDays >= 3 && diffDays <= 10) ? `<strong>${diffDays}</strong> أيام` : `<strong>${diffDays}</strong> يوم`;
@@ -443,20 +443,18 @@
                     const endDateOfCycle = new Date(y, m + 1, d);
                     const totalCycleDays = Math.round((endDateOfCycle - startDate) / (1000 * 60 * 60 * 24));
 
-                    if (diffDays >= 1) {
-                        const predictedCons = Math.round(dailyAvgRaw * totalCycleDays);
-                        const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue, phaseValue);
+                    const predictedCons = Math.round(dailyAvgRaw * totalCycleDays);
+                    const predictedBill = getFullCost(predictedCons, subscriptionType, wasteFeeValue, phaseValue);
 
-                        if (subscriptionType === 'supported') {
-                            if (predictedCons > 600) trafficClass = "avg-danger";
-                            else trafficClass = "avg-warning";
-                        } else {
-                            if (predictedCons > 1000) trafficClass = "avg-danger";
-                            else trafficClass = "avg-warning";
-                        }
-
-                        predictionHtml = `<div style="margin-top: 5.5px;">الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> كيلوواط <strong>${formatCurrency(predictedBill)}</strong> دينار</div>`;
+                    if (subscriptionType === 'supported') {
+                        if (predictedCons > 600) trafficClass = "avg-danger";
+                        else trafficClass = "avg-warning";
+                    } else {
+                        if (predictedCons > 1000) trafficClass = "avg-danger";
+                        else trafficClass = "avg-warning";
                     }
+
+                    predictionHtml = `<div style="margin-top: 5.5px;">الفاتورة المتوقعة لاستهلاك <strong>${formatNumber(predictedCons)}</strong> كيلوواط <strong>${formatCurrency(predictedBill)}</strong> دينار</div>`;
                     avgDivHtml = `<div class="daily-avg-container ${trafficClass}">معدل الاستهلاك اليومي خلال ${dayLabel} <strong>${dailyAvg}</strong> كيلوواط${predictionHtml}</div>`;
                 }
             }
