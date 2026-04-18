@@ -288,7 +288,7 @@
         .drawer-item-icon.blue { background: var(--primary-light); color: var(--primary); }
         .drawer-item-icon.green { background: #d1fae5; color: #059669; }
         .drawer-item-icon.red { background: #fee2e2; color: var(--error-red); }
-        .drawer-divider { height: 1px; background: #f1f5f9; margin: 6px 20px; }
+        .drawer-divider { height: 1px; background: rgba(0,0,0,0.04); margin: 2px 16px; }
         #drawer-import-input { display: none; }
     </style>
 </head>
@@ -380,6 +380,7 @@
                 <div class="drawer-item-icon blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
                 <span>استيراد من ملف</span>
             </button>
+            <div class="drawer-divider"></div>
             <button class="drawer-item" onclick="drawerExport()">
                 <div class="drawer-item-icon green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
                 <span>تصدير إلى ملف</span>
